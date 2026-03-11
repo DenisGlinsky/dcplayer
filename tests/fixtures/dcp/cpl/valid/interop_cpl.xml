@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompositionPlaylist xmlns="http://www.digicine.com/PROTO-ASDCP-CPL-20040511#">
+  <Id>urn:uuid:77777777-7777-7777-7777-777777777777</Id>
+  <AnnotationText>Main CPL annotation</AnnotationText>
+  <IssueDate>2026-03-11T08:30:00Z</IssueDate>
+  <Issuer>dcplayer-tests</Issuer>
+  <Creator>dcplayer-fixtures</Creator>
+  <ContentTitleText>Feature_FTR-1_S_EN-XX_OV</ContentTitleText>
+  <ContentKind>feature</ContentKind>
+  <EditRate>24 1</EditRate>
+  <ReelList>
+    <Reel>
+      <Id>urn:uuid:11111111-1111-1111-1111-111111111111</Id>
+      <AssetList>
+        <MainPicture>
+          <Id>urn:uuid:33333333-3333-3333-3333-333333333333</Id>
+          <AnnotationText>Reel 1 picture</AnnotationText>
+          <EditRate>24 1</EditRate>
+        </MainPicture>
+        <MainSound>
+          <Id>urn:uuid:44444444-4444-4444-4444-444444444444</Id>
+          <EditRate>24 1</EditRate>
+        </MainSound>
+        <MainSubtitle>
+          <Id>urn:uuid:55555555-5555-5555-5555-555555555555</Id>
+          <EditRate>24 1</EditRate>
+        </MainSubtitle>
+      </AssetList>
+    </Reel>
+    <Reel>
+      <Id>urn:uuid:22222222-2222-2222-2222-222222222222</Id>
+      <AssetList>
+        <MainPicture>
+          <Id>urn:uuid:66666666-6666-6666-6666-666666666666</Id>
+          <EditRate>24 1</EditRate>
+        </MainPicture>
+      </AssetList>
+    </Reel>
+  </ReelList>
+</CompositionPlaylist>

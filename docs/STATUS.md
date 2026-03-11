@@ -11,7 +11,7 @@
 
 ## 2. Текущее project snapshot
 
-Сейчас проект находится в состоянии **scaffold baseline + T01a готов**.
+Сейчас проект находится в состоянии **scaffold baseline + T01a/T01b готовы**.
 
 Подтверждено:
 - репозиторий очищен от `build/`, `__MACOSX`, `.DS_Store` и подобных артефактов;
@@ -24,9 +24,10 @@
 - stub-приложения собираются;
 - CTest содержит реальные unit и integration smoke tests и проходит;
 - реализованы `AssetMap` и `PKL` parser/validator с нормализованными моделями;
+- реализован `CPL` parser/validator с нормализованной моделью composition/reel/track references;
 - зафиксирован детерминированный формат диагностик `code + severity + path + message`;
 - XML layer декодирует named/numeric entities до доменной validation и принимает UTF-8 BOM;
-- добавлены valid/invalid DCP fixtures и unit tests для `assetmap`/`pkl`;
+- добавлены valid/invalid DCP fixtures и unit tests для `assetmap`/`pkl`/`cpl`;
 - `TREE.txt` и `manifest.json` регенерируются скриптом.
 
 ## 3. Честный baseline
@@ -45,17 +46,17 @@
 - минимальные unit/integration smoke tests;
 - `AssetMap` parser + validation;
 - `PKL` parser + validation;
+- `CPL` parser + validation;
 - cross-validation `PKL -> AssetMap`;
 - strict XML entity decoding + deterministic malformed-entity diagnostics;
-- UTF-8 BOM support for `AssetMap`/`PKL` ingest;
+- UTF-8 BOM support for `AssetMap`/`PKL`/`CPL` ingest;
 - DCP fixtures для positive/negative parser cases;
-- unit tests `assetmap_parser_test` и `pkl_parser_test`;
+- unit tests `assetmap_parser_test`, `pkl_parser_test` и `cpl_parser_test`;
 - канонические project docs;
 - 34 companion-specs;
 - 39 task-specific `AGENTS.md`.
 
 ### Что ещё не реализовано
-- CPL parsing;
 - OV/VF resolver и composition graph;
 - secure module;
 - KDM validation;
@@ -67,18 +68,20 @@
 
 ## 4. Evidence baseline
 
-Для ветки `T01a` в этом handoff подтверждены следующие команды:
+Для веток `T01a` и `T01b` в этом handoff подтверждены следующие команды:
 
 ```bash
 ./scripts/bootstrap.sh
 ./scripts/build.sh
 ./scripts/test.sh
 ./scripts/test.sh -R 'assetmap|pkl'
+./scripts/test.sh -R 'cpl'
 ```
 
 Focused branch tests:
 - `assetmap_parser_test`
 - `pkl_parser_test`
+- `cpl_parser_test`
 
 ## 5. Легенда статусов
 
@@ -113,7 +116,7 @@ Focused branch tests:
 | Task | Статус | Почему |
 |---|---|---|
 | T01a | DONE | `AssetMap`/`PKL` parse+validation, strict XML decoding/BOM support, fixtures и unit tests реализованы и проверены. |
-| T01b | READY | Зависимость `T01a` закрыта; можно начинать CPL parser/validation. |
+| T01b | DONE | `CPL` parse+validation, deterministic diagnostics, fixtures и unit tests реализованы и проверены. |
 | T03a | READY | Security control-plane baseline можно стартовать независимо от DCP parser. |
 | T05a | READY | Decode abstraction можно проектировать на канонических specs и leaf-level CMake scaffold. |
 | T06a | READY | Watermark contract можно фиксировать на текущих companion-specs. |

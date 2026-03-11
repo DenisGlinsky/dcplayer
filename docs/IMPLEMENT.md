@@ -93,3 +93,31 @@
 - path validation в `AssetMap` применяется к уже декодированному значению;
 - digest в `PKL` принимает hex/base64 и нормализуется к lower-case hex;
 - diagnostics сортируются детерминированно: `error` before `warning`, затем `code`, затем `path`.
+
+## 10. T01b CPL baseline
+
+Для `T01b` добавлен самостоятельный `CPL` parser/validator в `src/dcp/cpl` без перехода к resolver/timeline слоям.
+
+Нормализованная модель `CPL` на этом этапе включает:
+- composition-level metadata: `composition_id`, `content_title_text`, `annotation_text`, `issuer`, `creator`, `content_kind`, `issue_date_utc`, `edit_rate`;
+- `namespace_uri` и `schema_flavor`;
+- список `reels`;
+- внутри каждого reel явные optional lane `picture`, `sound`, `subtitle`;
+- внутри каждого asset reference: `asset_id`, `track_type`, optional `annotation_text`, `edit_rate`.
+
+Детерминированные правила `T01b`:
+- root parser принимает UTF-8 и UTF-8 BOM через тот же XML layer, что и `T01a`;
+- UUID нормализуется так же, как в `AssetMap/PKL`: optional `urn:uuid:` prefix и lower-case canonical form;
+- `IssueDate` нормализуется только в форме `YYYY-MM-DDTHH:MM:SSZ`;
+- `EditRate` принимается только как две положительные integer-компоненты через whitespace;
+- diagnostics используют тот же формат `code + severity + path + message`;
+- diagnostics сортируются тем же правилом, что и в `T01a`;
+- XML parse errors остаются отделены от domain validation errors: malformed XML получает `cpl.xml_malformed`, structural/domain defects получают отдельные `cpl.*` коды.
+
+Минимальный набор инвариантов `T01b`:
+- `CompositionPlaylist` root обязателен;
+- `Id`, `ContentTitleText`, `Issuer`, `IssueDate`, `EditRate`, `ReelList` обязательны;
+- `ReelList` не может быть пустым;
+- каждый reel обязан иметь `Id` и хотя бы один поддерживаемый track reference;
+- duplicate `reel_id`, duplicate track type внутри reel и duplicate `asset_id` внутри reel диагностируются явно;
+- `T01b` не валидирует существование asset ID в `AssetMap/PKL`, не делает OV/VF resolving и не строит playback timeline.
