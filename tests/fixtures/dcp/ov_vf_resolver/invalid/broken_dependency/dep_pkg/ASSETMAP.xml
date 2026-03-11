@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AssetMap xmlns="http://www.digicine.com/PROTO-ASDCP-AM-20040311#">
+  <Id>urn:uuid:10000000-0000-0000-0000-000000000110</Id>
+  <Creator>dcplayer-tests</Creator>
+  <VolumeCount>1</VolumeCount>
+  <IssueDate>2026-03-11T08:30:00Z</IssueDate>
+  <Issuer>dcplayer-tests</Issuer>
+  <AssetList />
+</AssetMap>

@@ -2,7 +2,8 @@
 
 ## Назначение
 
-Каноническая модель reel как логического контейнера picture/sound/text ресурсов.
+Каноническая модель reel внутри `CompositionGraph` после resolver-этапа OV/VF.
+На этом этапе reel хранит только уже разрешённые picture/sound/subtitle lanes без timeline execution.
 
 ## Канонические поля
 
@@ -10,17 +11,18 @@
 - `picture_track` — TrackFile или null
 - `sound_track` — TrackFile или null
 - `subtitle_track` — TrackFile или null
-- `aux_tracks` — массив TrackFile
 
 ## Инварианты
 
-- Хотя бы один essence-track присутствует.
-- Track type внутри reel не дублируется в конфликтующей форме.
+- Хотя бы один из `picture_track`, `sound_track`, `subtitle_track` обязан быть заполнен.
+- В одном reel каждый поддерживаемый lane встречается не более одного раза.
+- `picture_track.track_type`, `sound_track.track_type` и `subtitle_track.track_type`, если поле заполнено, должны совпадать с именем lane.
 
 ## Связи с другими объектами
 
-- Входит в CPL.
-- Формирует PlaybackTimeline.
+- Формируется из `CPL.Reel` после разрешения asset references.
+- Входит в `CompositionGraph`.
+- Является входом для будущего `PlaybackTimeline`.
 
 ## Каноническая сериализация
 
@@ -38,5 +40,6 @@
 ## Замечания по эволюции
 
 - Обратимо-совместимые расширения добавляются новыми полями.
+- Добавление supplemental-only lanes или timeline-specific metadata требует отдельного обновления companion-specs.
 - Ломающие изменения требуют явного обновления docs/PLAN.md, docs/STATUS.md и связанных task-specific AGENTS.md.
 - При изменении security semantics нужно дополнительно проверить trust boundary и audit model.
