@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompositionPlaylist xmlns="http://www.digicine.com/PROTO-ASDCP-CPL-20040511#">
+  <Id>urn:uuid:77777777-7777-7777-7777-777777777777</Id>
+  <IssueDate>2026-03-11T08:30:00Z</IssueDate>
+  <Issuer>dcplayer-tests</Issuer>
+  <ContentTitleText>Feature_FTR-1_S_EN-XX_OV</ContentTitleText>
+  <EditRate>24 1</EditRate>
+  <ReelList>
+    <Reel>
+      <Id>urn:uuid:11111111-1111-1111-1111-111111111111</Id>
+      <AssetList>
+      </AssetList>
+    </Reel>
+  </ReelList>
+</CompositionPlaylist>
