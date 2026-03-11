@@ -11,7 +11,7 @@
 
 ## 2. Текущее project snapshot
 
-Сейчас проект находится в состоянии **scaffold baseline + T01a/T01b/T02a готовы**.
+Сейчас проект находится в состоянии **scaffold baseline + T01a/T01b/T02a/T02b готовы**.
 
 Подтверждено:
 - репозиторий очищен от `build/`, `__MACOSX`, `.DS_Store` и подобных артефактов;
@@ -26,13 +26,16 @@
 - реализованы `AssetMap` и `PKL` parser/validator с нормализованными моделями;
 - реализован `CPL` parser/validator с нормализованной моделью composition/reel/track references;
 - реализован OV/VF resolver с нормализованным `CompositionGraph`;
+- реализован supplemental merge/override поверх нормализованного `CompositionGraph`;
 - owner selection для OV/VF resolver учитывает только PKL-backed CPL candidates;
 - resolver различает local/external dependencies на уровне итогового graph;
 - deterministic diagnostics покрывают missing asset id, broken reference, conflicting resolution и broken dependency;
+- deterministic supplemental diagnostics покрывают target not found, unsupported merge mode, base edit-rate mismatch, broken base dependency, conflicting override и asset without valid backing;
 - зафиксирован детерминированный формат диагностик `code + severity + path + message`;
 - XML layer декодирует named/numeric entities до доменной validation и принимает UTF-8 BOM;
 - добавлены valid/invalid DCP fixtures и unit tests для `assetmap`/`pkl`/`cpl`;
 - добавлены valid/invalid OV/VF fixtures и unit/integration tests для resolver-а;
+- добавлены valid/invalid supplemental fixtures и unit/integration tests для merge layer;
 - `TREE.txt` и `manifest.json` регенерируются скриптом.
 
 ## 3. Честный baseline
@@ -54,14 +57,18 @@
 - `CPL` parser + validation;
 - cross-validation `PKL -> AssetMap`;
 - `OV/VF` resolver + `CompositionGraph`;
+- `supplemental` merge layer + `SupplementalMergePolicy`;
 - backed owner selection для целевого `CPL`;
 - deterministic OV/VF diagnostics и dependency classification;
+- deterministic supplemental diagnostics, policy validation и multi-policy conflict handling;
 - strict XML entity decoding + deterministic malformed-entity diagnostics;
 - UTF-8 BOM support for `AssetMap`/`PKL`/`CPL` ingest;
 - DCP fixtures для positive/negative parser cases;
 - unit tests `assetmap_parser_test`, `pkl_parser_test` и `cpl_parser_test`;
 - unit test `ov_vf_resolver_unit_test`;
 - integration test `ov_vf_resolver_integration_test`;
+- unit test `supplemental_merge_unit_test`;
+- integration test `supplemental_merge_integration_test`;
 - канонические project docs;
 - 34 companion-specs;
 - 39 task-specific `AGENTS.md`.
@@ -77,7 +84,7 @@
 
 ## 4. Evidence baseline
 
-Для веток `T01a`, `T01b` и `T02a` в этом handoff подтверждены следующие команды:
+Для веток `T01a`, `T01b`, `T02a` и `T02b` в этом handoff подтверждены следующие команды:
 
 ```bash
 ./scripts/bootstrap.sh
@@ -86,6 +93,7 @@
 ./scripts/test.sh -R 'assetmap|pkl'
 ./scripts/test.sh -R 'cpl'
 ./scripts/test.sh -R 'ov|vf'
+./scripts/test.sh -R 'supplemental'
 ```
 
 Focused branch tests:
@@ -94,6 +102,8 @@ Focused branch tests:
 - `cpl_parser_test`
 - `ov_vf_resolver_unit_test`
 - `ov_vf_resolver_integration_test`
+- `supplemental_merge_unit_test`
+- `supplemental_merge_integration_test`
 
 ## 5. Легенда статусов
 
@@ -104,16 +114,14 @@ Focused branch tests:
 ## 6. Следующая очередь
 
 Первыми готовыми к запуску ветками являются:
-- `T02b` — Supplemental
 - `T03a` — PKI
 - `T05a` — J2K Backend
 - `T06a` — Watermark Model
 
 Рекомендуемый порядок старта:
-1. `T02b`
-2. `T03a`
-3. `T05a`
-4. `T06a`
+1. `T03a`
+2. `T05a`
+3. `T06a`
 
 ## 7. Фаза A — Foundation
 
@@ -130,7 +138,7 @@ Focused branch tests:
 | T01a | DONE | `AssetMap`/`PKL` parse+validation, strict XML decoding/BOM support, fixtures и unit tests реализованы и проверены. |
 | T01b | DONE | `CPL` parse+validation, deterministic diagnostics, fixtures и unit tests реализованы и проверены. |
 | T02a | DONE | `OV/VF` resolver, `CompositionGraph`, deterministic diagnostics, valid/invalid fixtures и unit/integration tests реализованы и проверены. |
-| T02b | READY | Supplemental merge policy можно начинать поверх зафиксированного OV/VF graph/resolver baseline. |
+| T02b | DONE | Реализованы supplemental merge/override, детерминированные diagnostics, valid/invalid fixtures и branch-focused tests. |
 | T03a | READY | Security control-plane baseline можно стартовать независимо от DCP parser. |
 | T05a | READY | Decode abstraction можно проектировать на канонических specs и leaf-level CMake scaffold. |
 | T06a | READY | Watermark contract можно фиксировать на текущих companion-specs. |
