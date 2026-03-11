@@ -2,8 +2,8 @@
 
 ## Назначение
 
-Каноническая модель reel внутри `CompositionGraph` после resolver-этапа OV/VF.
-На этом этапе reel хранит только уже разрешённые picture/sound/subtitle lanes без timeline execution.
+Каноническая модель reel внутри `CompositionGraph` после resolver-этапа OV/VF и, при наличии, после supplemental merge.
+Reel хранит только уже разрешённые picture/sound/subtitle lanes без timeline execution.
 
 ## Канонические поля
 
@@ -21,6 +21,7 @@
 ## Связи с другими объектами
 
 - Формируется из `CPL.Reel` после разрешения asset references.
+- При supplemental merge сопоставляется по `reel_id` с reel из supplemental `CPL`; новые reel вне base graph не добавляются.
 - Входит в `CompositionGraph`.
 - Является входом для будущего `PlaybackTimeline`.
 

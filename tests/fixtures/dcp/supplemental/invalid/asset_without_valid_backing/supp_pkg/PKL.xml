@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PackingList xmlns="http://www.digicine.com/PROTO-ASDCP-PKL-20040311#">
+  <Id>urn:uuid:20000000-0000-0000-0000-000000000307</Id>
+  <IssueDate>2026-03-11T08:30:00Z</IssueDate>
+  <Issuer>dcplayer-tests</Issuer>
+  <Creator>dcplayer-tests</Creator>
+  <AssetList>
+    <Asset>
+      <Id>urn:uuid:30000000-0000-0000-0000-000000000307</Id>
+      <Hash Algorithm="http://www.w3.org/2000/09/xmldsig#sha1">ABEiM0RVZneImaq7zN3u/wARIjM=</Hash>
+      <Size>2048</Size>
+      <Type>text/xml;asdcpKind=CPL</Type>
+      <OriginalFileName>CPL/supp.xml</OriginalFileName>
+    </Asset>
+    <Asset>
+      <Id>urn:uuid:32000000-0000-0000-0000-000000000307</Id>
+      <Hash Algorithm="http://www.w3.org/2001/04/xmlenc#sha256">30712233445566778899AABBCCDDEEFF00112233445566778899AABBCCDDEEFF</Hash>
+      <Size>4096</Size>
+      <Type>application/mxf</Type>
+      <OriginalFileName>MXF/missing_picture.mxf</OriginalFileName>
+    </Asset>
+  </AssetList>
+</PackingList>

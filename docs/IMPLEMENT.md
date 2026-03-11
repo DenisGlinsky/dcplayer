@@ -165,3 +165,59 @@
 - diagnostics сортируются тем же правилом: `error` before `warning`, затем `code`, затем `path`;
 - `source_packages` и `missing_assets` в `CompositionGraph` стабильно сортируются лексикографически;
 - `resolved_reels` сохраняют порядок исходного `CPL`.
+
+## 12. T02b supplemental merge baseline
+
+Для `T02b` вводится отдельный слой `src/dcp/supplemental`, который работает поверх уже show-ready `CompositionGraph` из `T02a` и не меняет код runtime/timeline.
+
+Вход слоя `T02b`:
+- `CompositionGraph`, уже собранный `ov_vf_resolver`-ом;
+- набор пакетов из тех же нормализованных `AssetMap`, `PKL`, `CPL`;
+- один или более `SupplementalMergePolicy`.
+
+Выход слоя `T02b`:
+- нормализованный `CompositionGraph` после применения допустимых supplemental override;
+- детерминированный набор диагностик формата `code + severity + path + message`;
+- `validation_status`, вычисляемый тем же правилом, что и в `T01a/T01b/T02a`.
+
+Правила применения `T02b`:
+- base graph не перестраивается заново и не исполняется; merge идёт только поверх уже разрешённых `resolved_reels`;
+- supplemental composition выбирается только по backed owner candidate: parsed `CPL` + `PKL` asset типа `composition_playlist` + валидный `AssetMap` backing;
+- policy сортируются стабильно по `(base_composition_id, supplemental_composition_id, policy_id)`, чтобы multi-policy merge не зависел от порядка входного массива;
+- supplemental reel сопоставляется с base graph по `reel_id`;
+- если supplemental lane отсутствует, lane наследуется из base graph без изменений;
+- если supplemental reference имеет валидный local `track_file` backing и lane разрешён в `allowed_overrides`, base lane заменяется этим `TrackFile`;
+- если local backing отсутствует, reference считается допустимой base dependency только при точном совпадении `asset_id`, lane identity и `edit_rate` с уже существующим lane того же reel в base graph;
+- supplemental не может добавлять новые reel или новые lane вне base graph;
+- при ошибке merge не публикует частичный graph как show-ready результат.
+
+Минимальные диагностические коды `T02b`:
+- `supplemental.base_composition_mismatch`
+- `supplemental.unsupported_merge_mode`
+- `supplemental.target_composition_not_found`
+- `supplemental.conflicting_composition_owner`
+- `supplemental.invalid_allowed_override`
+- `supplemental.duplicate_allowed_override`
+- `supplemental.override_not_allowed`
+- `supplemental.asset_without_valid_backing`
+- `supplemental.base_edit_rate_mismatch`
+- `supplemental.broken_base_dependency`
+- `supplemental.conflicting_override`
+
+Смысл кодов `T02b`:
+- `base_composition_mismatch` — policy ссылается не на тот base graph, который подан на вход merge;
+- `unsupported_merge_mode` — `merge_mode` не входит в поддерживаемый реализацией поднабор;
+- `target_composition_not_found` — supplemental composition не найден среди backed owner candidates;
+- `conflicting_composition_owner` — один и тот же supplemental composition backed более чем одним пакетом;
+- `invalid_allowed_override` — `allowed_overrides` содержит невалидное enum-значение lane;
+- `duplicate_allowed_override` — `allowed_overrides` содержит повтор одного и того же lane;
+- `override_not_allowed` — policy запрещает override данного lane;
+- `asset_without_valid_backing` — supplemental reference локально указывает на невалидный `PKL/AssetMap` backing;
+- `base_edit_rate_mismatch` — explicit base dependency совпадает по `asset_id`, но расходится по `edit_rate` с base graph;
+- `broken_base_dependency` — supplemental reference не совпадает с допустимым lane в base graph или ссылается на reel/lane, которого нет в base graph;
+- `conflicting_override` — разные policy дают разные resolved tracks для одного и того же `(reel_id, lane)`.
+
+Детерминизм `T02b`:
+- diagnostics сортируются тем же правилом: `error` before `warning`, затем `code`, затем `path`;
+- итоговый `source_packages` пересчитывается по фактически используемым `TrackFile`;
+- итоговый `composition_kind` пересчитывается от финальных `TrackFile` относительно `origin_package_id`.
