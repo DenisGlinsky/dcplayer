@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PackingList xmlns="http://www.digicine.com/PROTO-ASDCP-PKL-20040311#">
+  <Id>urn:uuid:22222222-2222-2222-2222-222222222222</Id>
+  <IssueDate>2024-01-02T03:04:05Z</IssueDate>
+  <Issuer>dcplayer tests</Issuer>
+  <AssetList>
+    <Asset>
+      <Id>urn:uuid:bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb</Id>
+      <Hash Algorithm="md5">00112233445566778899aabbccddeeff</Hash>
+      <Size>4096</Size>
+      <Type>text/xml;asdcpKind=CPL</Type>
+    </Asset>
+  </AssetList>
+</PackingList>

@@ -1,0 +1,99 @@
+project_name = "dcplayer"
+project_root = "/Users/admin/Documents/dcplayer"
+default_branch = "main"
+languages = ["cpp", "cmake", "python", "shell", "markdown"]
+
+primary_docs = [
+  "AGENTS.md",
+  "README.md",
+  "docs/ARCHITECTURE.md",
+  "docs/CODE_STYLE.md",
+  "docs/IMPLEMENT.md",
+  "docs/LIBRARIES.md",
+  "docs/PLAN.md",
+  "docs/STATUS.md",
+  "specs/objects/README.md",
+  "tasks/INDEX.md"
+]
+
+[commands]
+bootstrap = "./scripts/bootstrap.sh"
+build = "./scripts/build.sh"
+test = "./scripts/test.sh"
+format = "./scripts/format.sh"
+smoke = "./scripts/smoke.sh"
+repo_maps = "python3 scripts/update_repo_maps.py"
+
+[guardrails]
+one_task_one_slice = true
+no_silent_refactors = true
+require_tests = true
+require_risk_report = true
+require_spec_sync = true
+no_secrets_in_repo = true
+respect_secure_boundary = true
+prefer_fallback_paths = true
+fail_closed_for_secure_mode = true
+simulator_first = true
+
+[report]
+template = "docs/templates/CODEX_REPORT.md"
+required_sections = [
+  "Что сделано",
+  "Какие файлы изменены",
+  "Чем проверено",
+  "Что не покрыто",
+  "Какие риски остались",
+  "Какие зависимости/лицензии изменились"
+]
+
+[paths]
+allow = [
+  "apps/**",
+  "src/**",
+  "spb1/**",
+  "docs/**",
+  "specs/**",
+  "tests/**",
+  "scripts/**",
+  "CMakeLists.txt",
+  "CMakePresets.json",
+  "README.md",
+  "AGENTS.md",
+  ".clang-format",
+  ".clang-tidy",
+  ".codex/config.toml",
+  "manifest.json",
+  "TREE.txt"
+]
+forbid = [
+  "**/*.pem",
+  "**/*.key",
+  "**/*.p12",
+  "**/*.pfx",
+  "**/*.csr",
+  "**/*.crt",
+  "**/real_kdm/**",
+  "**/plaintext_essence/**",
+  "**/core.*",
+  "**/*.core"
+]
+
+[task_defaults]
+update_status_doc = true
+update_specs_when_contract_changes = true
+hardware_requires_explicit_note = true
+require_task_agents_read = true
+
+[security]
+control_plane = "mutual-tls"
+client_private_key_backend = "tpm2"
+server_private_key_backend = "zymkey"
+require_crl_or_ocsp = true
+require_encrypted_security_logs = true
+
+[playout]
+secure_pipeline = "local storage -> HSM decrypt service -> GPU decode -> GPU picture FM -> playout"
+audio_pipeline = "local storage -> secure authorization -> decrypt -> audio FM -> PCM/AES3 path"
+require_picture_watermark = true
+require_audio_watermark = true

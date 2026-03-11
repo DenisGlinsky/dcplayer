@@ -1,0 +1,8 @@
+{
+  "plan": "docs/PLAN.md",
+  "status": "docs/STATUS.md",
+  "index": "tasks/INDEX.md",
+  "tasks_count": 39,
+  "specs_baseline_count": 34,
+  "generated_by": "scripts/update_repo_maps.py"
+}

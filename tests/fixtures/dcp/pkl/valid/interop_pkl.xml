@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PackingList xmlns="http://www.digicine.com/PROTO-ASDCP-PKL-20040311#">
+  <Id>urn:uuid:22222222-2222-2222-2222-222222222222</Id>
+  <AnnotationText>Unit test packing list</AnnotationText>
+  <IssueDate>2024-01-02T03:04:05Z</IssueDate>
+  <Issuer>dcplayer tests</Issuer>
+  <Creator>dcplayer-tests</Creator>
+  <AssetList>
+    <Asset>
+      <Id>urn:uuid:bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb</Id>
+      <AnnotationText>Main CPL</AnnotationText>
+      <Hash Algorithm="http://www.w3.org/2000/09/xmldsig#sha1">ABEiM0RVZneImaq7zN3u/wARIjM=</Hash>
+      <Size>4096</Size>
+      <Type>text/xml;asdcpKind=CPL</Type>
+      <OriginalFileName>CPL/main_cpl.xml</OriginalFileName>
+    </Asset>
+    <Asset>
+      <Id>urn:uuid:cccccccc-cccc-cccc-cccc-cccccccccccc</Id>
+      <Hash Algorithm="http://www.w3.org/2001/04/xmlenc#sha256">00112233445566778899AABBCCDDEEFF00112233445566778899AABBCCDDEEFF</Hash>
+      <Size>8192</Size>
+      <Type>application/mxf</Type>
+      <OriginalFileName>MXF/reel_01_picture.mxf</OriginalFileName>
+    </Asset>
+  </AssetList>
+</PackingList>

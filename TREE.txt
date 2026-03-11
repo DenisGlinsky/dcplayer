@@ -1,0 +1,422 @@
+dcplayer
+├── .codex/
+│   ├── .gitkeep
+│   └── config.toml
+├── apps/
+│   ├── dcp_probe/
+│   │   ├── .gitkeep
+│   │   ├── CMakeLists.txt
+│   │   └── main.cpp
+│   ├── playout_service/
+│   │   ├── .gitkeep
+│   │   ├── CMakeLists.txt
+│   │   └── main.cpp
+│   ├── sms_ui/
+│   │   ├── .gitkeep
+│   │   ├── CMakeLists.txt
+│   │   └── main.cpp
+│   └── tms_web/
+│       ├── .gitkeep
+│       ├── CMakeLists.txt
+│       └── main.cpp
+├── cmake/
+│   └── .gitkeep
+├── docs/
+│   ├── adr/
+│   │   ├── .gitkeep
+│   │   ├── 0001-security-boundary.md
+│   │   ├── 0002-host-spb1-contract.md
+│   │   ├── 0003-watermark-control-model.md
+│   │   ├── 0004-audio-roadmap-aes3.md
+│   │   └── README.md
+│   ├── templates/
+│   │   ├── .gitkeep
+│   │   └── CODEX_REPORT.md
+│   ├── ARCHITECTURE.md
+│   ├── CODE_STYLE.md
+│   ├── IMPLEMENT.md
+│   ├── LIBRARIES.md
+│   ├── PLAN.md
+│   └── STATUS.md
+├── scripts/
+│   ├── .gitkeep
+│   ├── bootstrap.sh
+│   ├── build.sh
+│   ├── format.sh
+│   ├── preset_env.sh
+│   ├── README.md
+│   ├── smoke.sh
+│   ├── test.sh
+│   └── update_repo_maps.py
+├── spb1/
+│   ├── api/
+│   │   ├── .gitkeep
+│   │   └── CMakeLists.txt
+│   ├── diag/
+│   │   ├── .gitkeep
+│   │   └── CMakeLists.txt
+│   ├── firmware/
+│   │   ├── .gitkeep
+│   │   └── CMakeLists.txt
+│   ├── simulator/
+│   │   ├── .gitkeep
+│   │   └── CMakeLists.txt
+│   └── CMakeLists.txt
+├── specs/
+│   └── objects/
+│       ├── .gitkeep
+│       ├── AES3DeviceProfile.md
+│       ├── AssetMap.md
+│       ├── AuditExport.md
+│       ├── CertificateStore.md
+│       ├── ChannelRouteMap.md
+│       ├── CompositionGraph.md
+│       ├── CPL.md
+│       ├── DetectorReport.md
+│       ├── FaultMatrix.md
+│       ├── FrameSurface.md
+│       ├── HsmDecryptSession.md
+│       ├── J2KBackendContract.md
+│       ├── KDMEnvelope.md
+│       ├── KDMValidationResult.md
+│       ├── OperatorAlert.md
+│       ├── PKL.md
+│       ├── PlaybackSession.md
+│       ├── PlaybackTimeline.md
+│       ├── ProtectedApiEnvelope.md
+│       ├── README.md
+│       ├── Reel.md
+│       ├── ScheduleEntry.md
+│       ├── SecureChannelContract.md
+│       ├── SecureClockPolicy.md
+│       ├── SecurityEvent.md
+│       ├── SecurityModuleContract.md
+│       ├── ShowControlCommand.md
+│       ├── SubtitleCue.md
+│       ├── SupplementalMergePolicy.md
+│       ├── TimedTextDocument.md
+│       ├── TrackFile.md
+│       ├── TrustChain.md
+│       ├── WatermarkEvidence.md
+│       ├── WatermarkPayload.md
+│       └── WatermarkState.md
+├── src/
+│   ├── audio/
+│   │   ├── aes3_adapter/
+│   │   │   ├── .gitkeep
+│   │   │   └── CMakeLists.txt
+│   │   ├── channel_router/
+│   │   │   ├── .gitkeep
+│   │   │   └── CMakeLists.txt
+│   │   ├── pcm_engine/
+│   │   │   ├── .gitkeep
+│   │   │   └── CMakeLists.txt
+│   │   └── CMakeLists.txt
+│   ├── core/
+│   │   ├── .gitkeep
+│   │   ├── CMakeLists.txt
+│   │   ├── version.cpp
+│   │   └── version.hpp
+│   ├── dcp/
+│   │   ├── assetmap/
+│   │   │   ├── .gitkeep
+│   │   │   └── CMakeLists.txt
+│   │   ├── cpl/
+│   │   │   ├── .gitkeep
+│   │   │   └── CMakeLists.txt
+│   │   ├── ov_vf_resolver/
+│   │   │   ├── .gitkeep
+│   │   │   └── CMakeLists.txt
+│   │   ├── pkl/
+│   │   │   ├── .gitkeep
+│   │   │   └── CMakeLists.txt
+│   │   ├── supplemental/
+│   │   │   ├── .gitkeep
+│   │   │   └── CMakeLists.txt
+│   │   └── CMakeLists.txt
+│   ├── ingest/
+│   │   ├── .gitkeep
+│   │   └── CMakeLists.txt
+│   ├── platform/
+│   │   ├── linux/
+│   │   │   └── .gitkeep
+│   │   ├── macos/
+│   │   │   └── .gitkeep
+│   │   └── windows/
+│   │       └── .gitkeep
+│   ├── playout/
+│   │   ├── frame_queue/
+│   │   │   ├── .gitkeep
+│   │   │   └── CMakeLists.txt
+│   │   ├── sync/
+│   │   │   ├── .gitkeep
+│   │   │   └── CMakeLists.txt
+│   │   ├── timeline/
+│   │   │   ├── .gitkeep
+│   │   │   └── CMakeLists.txt
+│   │   └── CMakeLists.txt
+│   ├── security_api/
+│   │   ├── certs/
+│   │   │   ├── .gitkeep
+│   │   │   └── CMakeLists.txt
+│   │   ├── host_spb1_contract/
+│   │   │   ├── .gitkeep
+│   │   │   └── CMakeLists.txt
+│   │   ├── kdm/
+│   │   │   ├── .gitkeep
+│   │   │   └── CMakeLists.txt
+│   │   ├── link_crypto/
+│   │   │   ├── .gitkeep
+│   │   │   └── CMakeLists.txt
+│   │   ├── log_client/
+│   │   │   ├── .gitkeep
+│   │   │   └── CMakeLists.txt
+│   │   └── CMakeLists.txt
+│   ├── storage/
+│   │   ├── .gitkeep
+│   │   └── CMakeLists.txt
+│   ├── subtitles/
+│   │   ├── interop/
+│   │   │   ├── .gitkeep
+│   │   │   └── CMakeLists.txt
+│   │   ├── smpte_tt/
+│   │   │   ├── .gitkeep
+│   │   │   └── CMakeLists.txt
+│   │   └── CMakeLists.txt
+│   ├── video/
+│   │   ├── j2k_cpu/
+│   │   │   ├── .gitkeep
+│   │   │   └── CMakeLists.txt
+│   │   ├── j2k_gpu_open/
+│   │   │   ├── .gitkeep
+│   │   │   └── CMakeLists.txt
+│   │   ├── secure_decode_adapter/
+│   │   │   ├── .gitkeep
+│   │   │   └── CMakeLists.txt
+│   │   └── CMakeLists.txt
+│   └── watermark/
+│       ├── detector_harness/
+│       │   ├── .gitkeep
+│       │   └── CMakeLists.txt
+│       ├── fm_backend_api/
+│       │   ├── .gitkeep
+│       │   └── CMakeLists.txt
+│       ├── fm_control/
+│       │   ├── .gitkeep
+│       │   └── CMakeLists.txt
+│       └── CMakeLists.txt
+├── tasks/
+│   ├── T00a-bootstrap/
+│   │   └── AGENTS.md
+│   ├── T00b-specs/
+│   │   └── AGENTS.md
+│   ├── T00c-memory/
+│   │   └── AGENTS.md
+│   ├── T01a-assetmap-pkl/
+│   │   └── AGENTS.md
+│   ├── T01b-cpl/
+│   │   └── AGENTS.md
+│   ├── T01c-probe-graph/
+│   │   └── AGENTS.md
+│   ├── T02a-ov-vf/
+│   │   └── AGENTS.md
+│   ├── T02b-supplemental/
+│   │   └── AGENTS.md
+│   ├── T02c-timeline/
+│   │   └── AGENTS.md
+│   ├── T03a-pki/
+│   │   └── AGENTS.md
+│   ├── T03b-pi-zymkey/
+│   │   └── AGENTS.md
+│   ├── T03c-acl-api/
+│   │   └── AGENTS.md
+│   ├── T03d-audit-tamper/
+│   │   └── AGENTS.md
+│   ├── T03e-secure-time/
+│   │   └── AGENTS.md
+│   ├── T04a-security-module/
+│   │   └── AGENTS.md
+│   ├── T04b-kdm-binding/
+│   │   └── AGENTS.md
+│   ├── T04c-fail-closed/
+│   │   └── AGENTS.md
+│   ├── T04d-event-export/
+│   │   └── AGENTS.md
+│   ├── T05a-j2k-backend/
+│   │   └── AGENTS.md
+│   ├── T05b-cpu-decoder/
+│   │   └── AGENTS.md
+│   ├── T05c-gpu-contract/
+│   │   └── AGENTS.md
+│   ├── T05d-nvidia/
+│   │   └── AGENTS.md
+│   ├── T06a-watermark-model/
+│   │   └── AGENTS.md
+│   ├── T06b-detector/
+│   │   └── AGENTS.md
+│   ├── T06c-picture-fm/
+│   │   └── AGENTS.md
+│   ├── T06d-fm-integration/
+│   │   └── AGENTS.md
+│   ├── T06e-sound-fm/
+│   │   └── AGENTS.md
+│   ├── T07a-pcm-routing/
+│   │   └── AGENTS.md
+│   ├── T07b-audio-sync/
+│   │   └── AGENTS.md
+│   ├── T07c-aes3/
+│   │   └── AGENTS.md
+│   ├── T07d-interop-subtitles/
+│   │   └── AGENTS.md
+│   ├── T07e-smpte-text/
+│   │   └── AGENTS.md
+│   ├── T08a-open-playout/
+│   │   └── AGENTS.md
+│   ├── T08b-secure-playout/
+│   │   └── AGENTS.md
+│   ├── T08c-fault-matrix/
+│   │   └── AGENTS.md
+│   ├── T08d-show-rehearsal/
+│   │   └── AGENTS.md
+│   ├── T09a-local-sms/
+│   │   └── AGENTS.md
+│   ├── T09b-tms-web/
+│   │   └── AGENTS.md
+│   ├── T09c-operator-audit/
+│   │   └── AGENTS.md
+│   ├── INDEX.md
+│   └── README.md
+├── tests/
+│   ├── compliance/
+│   │   ├── encrypted_show/
+│   │   │   └── CMakeLists.txt
+│   │   ├── .gitkeep
+│   │   └── CMakeLists.txt
+│   ├── fixtures/
+│   │   ├── dcp/
+│   │   │   └── .gitkeep
+│   │   ├── j2k/
+│   │   │   └── .gitkeep
+│   │   └── .gitkeep
+│   ├── integration/
+│   │   ├── audio/
+│   │   │   ├── aes3/
+│   │   │   │   └── CMakeLists.txt
+│   │   │   ├── audio_sync/
+│   │   │   │   └── CMakeLists.txt
+│   │   │   └── CMakeLists.txt
+│   │   ├── audio_sync/
+│   │   │   └── CMakeLists.txt
+│   │   ├── dcp/
+│   │   │   ├── ov_vf/
+│   │   │   │   └── CMakeLists.txt
+│   │   │   ├── supplemental/
+│   │   │   │   └── CMakeLists.txt
+│   │   │   └── CMakeLists.txt
+│   │   ├── dcp_probe/
+│   │   │   └── CMakeLists.txt
+│   │   ├── ops_audit/
+│   │   │   └── CMakeLists.txt
+│   │   ├── playout/
+│   │   │   ├── faults/
+│   │   │   │   └── CMakeLists.txt
+│   │   │   ├── open/
+│   │   │   │   └── CMakeLists.txt
+│   │   │   ├── secure/
+│   │   │   │   └── CMakeLists.txt
+│   │   │   └── CMakeLists.txt
+│   │   ├── secure_playback/
+│   │   │   └── CMakeLists.txt
+│   │   ├── security/
+│   │   │   ├── audit/
+│   │   │   │   └── CMakeLists.txt
+│   │   │   ├── mtls_contract/
+│   │   │   │   └── CMakeLists.txt
+│   │   │   ├── simulator/
+│   │   │   │   └── CMakeLists.txt
+│   │   │   ├── state_machine/
+│   │   │   │   └── CMakeLists.txt
+│   │   │   └── CMakeLists.txt
+│   │   ├── sms/
+│   │   │   └── CMakeLists.txt
+│   │   ├── timeline/
+│   │   │   └── CMakeLists.txt
+│   │   ├── tms/
+│   │   │   └── CMakeLists.txt
+│   │   ├── video/
+│   │   │   ├── gpu_contract/
+│   │   │   │   └── CMakeLists.txt
+│   │   │   ├── nvidia/
+│   │   │   │   └── CMakeLists.txt
+│   │   │   └── CMakeLists.txt
+│   │   ├── watermark/
+│   │   │   ├── detector/
+│   │   │   │   └── CMakeLists.txt
+│   │   │   ├── picture_gpu/
+│   │   │   │   └── CMakeLists.txt
+│   │   │   ├── sound/
+│   │   │   │   └── CMakeLists.txt
+│   │   │   └── CMakeLists.txt
+│   │   ├── .gitkeep
+│   │   └── CMakeLists.txt
+│   ├── unit/
+│   │   ├── audio/
+│   │   │   ├── pcm/
+│   │   │   │   └── CMakeLists.txt
+│   │   │   └── CMakeLists.txt
+│   │   ├── core/
+│   │   │   ├── CMakeLists.txt
+│   │   │   └── core_version_test.cpp
+│   │   ├── dcp/
+│   │   │   ├── assetmap/
+│   │   │   │   └── CMakeLists.txt
+│   │   │   ├── cpl/
+│   │   │   │   └── CMakeLists.txt
+│   │   │   ├── ov_vf_resolver/
+│   │   │   │   └── CMakeLists.txt
+│   │   │   ├── pkl/
+│   │   │   │   └── CMakeLists.txt
+│   │   │   ├── supplemental/
+│   │   │   │   └── CMakeLists.txt
+│   │   │   └── CMakeLists.txt
+│   │   ├── security/
+│   │   │   ├── api/
+│   │   │   │   └── CMakeLists.txt
+│   │   │   ├── export/
+│   │   │   │   └── CMakeLists.txt
+│   │   │   ├── kdm/
+│   │   │   │   └── CMakeLists.txt
+│   │   │   ├── pki/
+│   │   │   │   └── CMakeLists.txt
+│   │   │   ├── time/
+│   │   │   │   └── CMakeLists.txt
+│   │   │   └── CMakeLists.txt
+│   │   ├── subtitles/
+│   │   │   ├── interop/
+│   │   │   │   └── CMakeLists.txt
+│   │   │   ├── smpte_tt/
+│   │   │   │   └── CMakeLists.txt
+│   │   │   └── CMakeLists.txt
+│   │   ├── video/
+│   │   │   ├── j2k_backend/
+│   │   │   │   └── CMakeLists.txt
+│   │   │   ├── j2k_cpu/
+│   │   │   │   └── CMakeLists.txt
+│   │   │   └── CMakeLists.txt
+│   │   ├── watermark/
+│   │   │   ├── model/
+│   │   │   │   └── CMakeLists.txt
+│   │   │   └── CMakeLists.txt
+│   │   ├── .gitkeep
+│   │   └── CMakeLists.txt
+│   └── CMakeLists.txt
+├── .clang-format
+├── .clang-tidy
+├── .editorconfig
+├── .gitignore
+├── AGENTS.md
+├── CMakeLists.txt
+├── CMakePresets.json
+├── manifest.json
+├── README.md
+└── TREE.txt

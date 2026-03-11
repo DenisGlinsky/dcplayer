@@ -1,0 +1,5 @@
+add_subdirectory(pki)
+add_subdirectory(api)
+add_subdirectory(kdm)
+add_subdirectory(time)
+add_subdirectory(export)

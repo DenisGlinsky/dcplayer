@@ -1,0 +1,63 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 25,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "dev-ninja",
+      "displayName": "Developer build (Ninja)",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/dev-ninja",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+        "DCP_PLAYER_ENABLE_TESTS": "ON"
+      }
+    },
+    {
+      "name": "dev-make",
+      "displayName": "Developer build (Unix Makefiles)",
+      "generator": "Unix Makefiles",
+      "binaryDir": "${sourceDir}/build/dev-make",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+        "DCP_PLAYER_ENABLE_TESTS": "ON"
+      }
+    },
+    {
+      "name": "ci",
+      "displayName": "CI build",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/ci",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "DCP_PLAYER_ENABLE_TESTS": "ON",
+        "DCP_PLAYER_ENABLE_SANITIZERS": "OFF"
+      }
+    }
+  ],
+  "buildPresets": [
+    { "name": "build-dev-ninja", "configurePreset": "dev-ninja" },
+    { "name": "build-dev-make", "configurePreset": "dev-make" },
+    { "name": "build-ci", "configurePreset": "ci" }
+  ],
+  "testPresets": [
+    {
+      "name": "test-dev-ninja",
+      "configurePreset": "dev-ninja",
+      "output": { "outputOnFailure": true }
+    },
+    {
+      "name": "test-dev-make",
+      "configurePreset": "dev-make",
+      "output": { "outputOnFailure": true }
+    },
+    {
+      "name": "test-ci",
+      "configurePreset": "ci",
+      "output": { "outputOnFailure": true }
+    }
+  ]
+}

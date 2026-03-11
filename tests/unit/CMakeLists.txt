@@ -1,0 +1,7 @@
+add_subdirectory(core)
+add_subdirectory(dcp)
+add_subdirectory(security)
+add_subdirectory(video)
+add_subdirectory(audio)
+add_subdirectory(subtitles)
+add_subdirectory(watermark)
