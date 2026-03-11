@@ -21,6 +21,7 @@
 - `resolved_path` обязателен, относителен и уже нормализован по правилам `AssetMap`.
 - `dependency_kind = local` допустим только если `source_package_id` совпадает с `CompositionGraph.origin_package_id`.
 - `dependency_kind = external` допустим только если `source_package_id` отличается от `CompositionGraph.origin_package_id`.
+- При подаче `TrackFile` в `PlaybackTimeline` его `dependency_kind` дополнительно обязан быть согласован с `CompositionGraph.composition_kind`: `ov` не допускает external lane, `vf` требует хотя бы один external lane в пределах graph.
 
 ## Связи с другими объектами
 

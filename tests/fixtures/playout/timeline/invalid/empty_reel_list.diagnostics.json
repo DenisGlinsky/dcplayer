@@ -1,0 +1,8 @@
+[
+  {
+    "code": "timeline.empty_reel_list",
+    "severity": "error",
+    "path": "/resolved_reels",
+    "message": "CompositionGraph must contain at least one resolved reel"
+  }
+]

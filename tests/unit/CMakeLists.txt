@@ -1,5 +1,6 @@
 add_subdirectory(core)
 add_subdirectory(dcp)
+add_subdirectory(playout)
 add_subdirectory(security)
 add_subdirectory(video)
 add_subdirectory(audio)

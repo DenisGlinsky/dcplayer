@@ -17,6 +17,7 @@ Reel хранит только уже разрешённые picture/sound/subti
 - Хотя бы один из `picture_track`, `sound_track`, `subtitle_track` обязан быть заполнен.
 - В одном reel каждый поддерживаемый lane встречается не более одного раза.
 - `picture_track.track_type`, `sound_track.track_type` и `subtitle_track.track_type`, если поле заполнено, должны совпадать с именем lane.
+- provenance и `dependency_kind` разрешённых lane обязаны оставаться согласованными с `CompositionGraph.composition_kind`, если reel подаётся в `PlaybackTimeline`.
 
 ## Связи с другими объектами
 

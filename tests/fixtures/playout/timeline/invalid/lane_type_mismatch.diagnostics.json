@@ -1,0 +1,8 @@
+[
+  {
+    "code": "timeline.lane_type_mismatch",
+    "severity": "error",
+    "path": "/resolved_reels[1]/picture_track",
+    "message": "TrackFile track_type does not match the reel lane"
+  }
+]

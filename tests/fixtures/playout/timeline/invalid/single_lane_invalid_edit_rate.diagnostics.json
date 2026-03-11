@@ -1,0 +1,8 @@
+[
+  {
+    "code": "timeline.invalid_edit_rate",
+    "severity": "error",
+    "path": "/resolved_reels[1]/picture_track/edit_rate",
+    "message": "Timeline lane edit_rate must contain positive numerator and denominator"
+  }
+]

@@ -1,0 +1,8 @@
+[
+  {
+    "code": "timeline.unsupported_graph_shape",
+    "severity": "error",
+    "path": "/resolved_reels[2]/subtitle_track/source_package_id",
+    "message": "TrackFile source_package_id must be listed in CompositionGraph source_packages"
+  }
+]

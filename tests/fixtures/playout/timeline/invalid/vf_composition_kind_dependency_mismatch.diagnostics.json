@@ -1,0 +1,8 @@
+[
+  {
+    "code": "timeline.composition_kind_dependency_mismatch",
+    "severity": "error",
+    "path": "/composition_kind",
+    "message": "VF CompositionGraph must contain at least one external lane dependency"
+  }
+]

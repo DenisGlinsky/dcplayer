@@ -221,3 +221,42 @@
 - diagnostics сортируются тем же правилом: `error` before `warning`, затем `code`, затем `path`;
 - итоговый `source_packages` пересчитывается по фактически используемым `TrackFile`;
 - итоговый `composition_kind` пересчитывается от финальных `TrackFile` относительно `origin_package_id`.
+
+## 13. T02c playback timeline baseline
+
+Для `T02c` вводится отдельный dry-run builder в `src/playout/timeline`, который работает только поверх уже show-ready `CompositionGraph` и не лезет в decode/runtime/scheduler.
+
+Вход `T02c`:
+- один уже разрешённый `CompositionGraph`;
+- никаких повторных OV/VF resolving, supplemental merge, KDM/security checks и runtime queue semantics.
+
+Выход `T02c`:
+- нормализованный `PlaybackTimeline`;
+- детерминированные diagnostics формата `code + severity + path + message`;
+- `validation_status`, вычисляемый по тому же правилу, что и в `T01a/T01b/T02a/T02b`.
+
+Контракт `T02c`:
+- timeline сохраняет `composition_id`, `origin_package_id`, `composition_kind`, `source_packages`;
+- каждый `reel_entry` соответствует одному reel из `CompositionGraph.resolved_reels` и сохраняет `reel_id`;
+- lane `picture`, `sound`, `subtitle` переносятся как optional machine-readable entries с provenance (`source_package_id`, `dependency_kind`, `resolved_path`, `asset_id`);
+- `edit_rate` фиксируется на уровне `reel_entry` только при полном совпадении `edit_rate` всех присутствующих lane данного reel;
+- если `CompositionGraph` содержит `missing_assets`, пустой `resolved_reels`, конфликт lane identity/edit_rate или нарушает собственные инварианты provenance, builder не публикует частичный timeline.
+
+Диагностика `T02c`:
+- `timeline.graph_not_show_ready` — graph содержит unresolved assets и потому не пригоден для dry-run timeline;
+- `timeline.empty_reel_list` — graph не содержит ни одного resolved reel;
+- `timeline.lane_type_mismatch` — `TrackFile.track_type` не совпадает с lane, в который он положен;
+- `timeline.composition_kind_dependency_mismatch` — `composition_kind` противоречит фактическому lane provenance / `dependency_kind`;
+- `timeline.invalid_edit_rate` — lane содержит неположительный `edit_rate`;
+- `timeline.entry_edit_rate_mismatch` — в одном reel присутствуют lane с разным `edit_rate`;
+- `timeline.unsupported_graph_shape` — нарушены остальные ожидаемые shape/provenance invariants (`origin_package_id`, `source_packages`, reel/lane identity, пустые обязательные поля).
+
+Правило precedence `T02c`:
+- если lane уже получил более специфичную ошибку `timeline.invalid_edit_rate`, builder не добавляет вторичный generic `timeline.unsupported_graph_shape` только потому, что reel не смог дать entry-level `edit_rate`;
+- global `timeline.composition_kind_dependency_mismatch` не добавляется поверх уже достаточного первичного дефекта вроде `timeline.empty_reel_list` или single-lane `timeline.invalid_edit_rate`;
+- `timeline.unsupported_graph_shape` остаётся только для остальных shape/provenance нарушений, не покрытых более специфичными кодами.
+
+Сознательные ограничения `T02c`:
+- timeline остаётся reel-level, а не frame/runtime-level;
+- duration не сериализуется, потому что текущий `CompositionGraph` ещё не содержит duration metadata;
+- dry-run builder не занимается wall-clock scheduling, device output, real-time sync, subtitle rendering и audio routing runtime.

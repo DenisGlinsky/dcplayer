@@ -1,0 +1,8 @@
+[
+  {
+    "code": "timeline.composition_kind_dependency_mismatch",
+    "severity": "error",
+    "path": "/resolved_reels[2]/picture_track/dependency_kind",
+    "message": "OV CompositionGraph cannot contain external lane dependencies"
+  }
+]
