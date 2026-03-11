@@ -1,0 +1,8 @@
+[
+  {
+    "code": "trust_chain.chain_broken",
+    "severity": "error",
+    "path": "/issuer_chain[1]",
+    "message": "Issuer chain contains a non-root self-issued certificate"
+  }
+]

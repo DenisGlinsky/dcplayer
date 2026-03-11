@@ -1,0 +1,8 @@
+[
+  {
+    "code": "trust_chain.invalid_revocation_state",
+    "severity": "error",
+    "path": "/revocation_entries[1]",
+    "message": "Revocation entry state is invalid for chain evaluation"
+  }
+]

@@ -1,0 +1,7 @@
+store_id=self-issued-leaf-store
+store_version=1
+updated_at_utc=2026-03-11T08:30:00Z
+revocation_source=file://revocation/cache/root
+record|roots|aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa|CN=Unrelated Root|CN=Unrelated Root|root|2026-01-01T00:00:00Z|2036-01-01T00:00:00Z|1010
+record|device_certs|bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb|CN=Media Server|CN=Media Server|client|2026-01-01T00:00:00Z|2028-01-01T00:00:00Z|1011
+issuer_role_hint|bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb|root

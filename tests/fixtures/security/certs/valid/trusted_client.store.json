@@ -1,0 +1,43 @@
+{
+  "store_id": "trusted-client-store",
+  "store_version": "1",
+  "fingerprint_algorithm": "sha256",
+  "roots": [
+    {
+      "fingerprint": "1111111111111111111111111111111111111111111111111111111111111111",
+      "subject_dn": "CN=Root CA",
+      "issuer_dn": "CN=Root CA",
+      "role": "root",
+      "not_before_utc": "2026-01-01T00:00:00Z",
+      "not_after_utc": "2036-01-01T00:00:00Z",
+      "serial_number": "1000"
+    }
+  ],
+  "intermediates": [
+    {
+      "fingerprint": "2222222222222222222222222222222222222222222222222222222222222222",
+      "subject_dn": "CN=Intermediate CA",
+      "issuer_dn": "CN=Root CA",
+      "role": "intermediate",
+      "not_before_utc": "2026-01-01T00:00:00Z",
+      "not_after_utc": "2030-01-01T00:00:00Z",
+      "serial_number": "1001"
+    }
+  ],
+  "device_certs": [
+    {
+      "fingerprint": "3333333333333333333333333333333333333333333333333333333333333333",
+      "subject_dn": "CN=Media Server",
+      "issuer_dn": "CN=Intermediate CA",
+      "role": "client",
+      "not_before_utc": "2026-01-01T00:00:00Z",
+      "not_after_utc": "2028-01-01T00:00:00Z",
+      "serial_number": "1002"
+    }
+  ],
+  "revocation_sources": [
+    "file://revocation/cache/root",
+    "file://revocation/cache/status"
+  ],
+  "updated_at_utc": "2026-03-11T08:30:00Z"
+}

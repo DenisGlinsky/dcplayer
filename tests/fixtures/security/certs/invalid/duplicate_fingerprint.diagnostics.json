@@ -1,0 +1,8 @@
+[
+  {
+    "code": "cert_store.duplicate_fingerprint",
+    "severity": "error",
+    "path": "/intermediates[1]/fingerprint",
+    "message": "Fingerprint already exists in CertificateStore"
+  }
+]

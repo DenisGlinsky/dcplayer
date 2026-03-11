@@ -1,0 +1,8 @@
+[
+  {
+    "code": "trust_chain.invalid_validation_time",
+    "severity": "error",
+    "path": "/validation_time_utc",
+    "message": "validation_time_utc must be a UTC timestamp"
+  }
+]

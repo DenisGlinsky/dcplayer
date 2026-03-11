@@ -258,5 +258,48 @@
 
 Сознательные ограничения `T02c`:
 - timeline остаётся reel-level, а не frame/runtime-level;
+
+## 14. T03a PKI baseline
+
+Для `T03a` введён локальный baseline PKI/trust-store слой в `src/security_api/certs` без выхода в transport и без реальной crypto-интеграции с TPM/ZymKey.
+
+Вход `T03a`:
+- in-memory import metadata store (`store_id`, `store_version`, `updated_at_utc`);
+- import trust anchors, intermediates и device certificates;
+- optional import-only `private_key_material`, который обязан быть пустым;
+- `revocation_sources`;
+- `subject_fingerprint`, `validation_time_utc`, optional `checked_sources`, in-memory `revocation_entries` и `revocation_policy`.
+
+Выход `T03a`:
+- нормализованный `CertificateStore`;
+- `TrustChain` result model с `decision`, `decision_reason`, `revocation_status` и `checked_sources`;
+- детерминированные diagnostics того же формата `code + severity + path + message`;
+- `validation_status`, вычисляемый тем же правилом, что и в предыдущих validation-ветках.
+
+Правила `T03a`:
+- `fingerprint_algorithm` фиксирован как `sha256`;
+- fingerprint нормализуется к lower-case hex и валидируется как 64-char SHA-256;
+- `roots` принимают только `role=root`, `intermediates` только `role=intermediate`, `device_certs` только `role=server|client|signer`;
+- `issuer_role_hint` остаётся optional metadata-only полем и в `T03a` используется только для deterministic missing-issuer classification (`root|intermediate|unknown`);
+- root certificate baseline должен быть self-issued;
+- `revocation_sources` нормализуются в unique + lexicographically sorted order;
+- rootless store может существовать как object model; для `T03a` `trust_chain.anchor_missing` гарантирован только для missing issuer после intermediate и для direct device certificate с `issuer_role_hint=root`, а self-issued non-root и остальные unresolved issuer links остаются `trust_chain.chain_broken`;
+- chain evaluation в `T03a` является metadata-based: она не делает ASN.1 parsing, signature verification, OCSP/CRL network fetch и не использует secure clock.
+
+Revocation semantics `T03a`:
+- configured authority set задаётся через `CertificateStore.revocation_sources`;
+- если request задаёт `checked_sources`, authoritative subset = `revocation_sources ∩ checked_sources`;
+- revocation entry учитывается только по паре `(fingerprint, source)` из authoritative subset;
+- source вне configured/checked authority set даёт `trust_chain.unknown_revocation_source` как наблюдаемый warning diagnostic и не считается валидным evidence;
+- `require_good` — missing/unknown/not_checked revocation state приводит к `trust_chain.revocation_unavailable` c `severity=error` и `decision=rejected`;
+- `allow_unknown` — тот же сценарий, включая non-authoritative revocation entries, приводит к `severity=warning` и `decision=warning_only`;
+- `revoked` всегда fail-closed и даёт `trust_chain.revoked`;
+- invalid revocation entry contract даёт `trust_chain.invalid_revocation_state`; при этом parser сначала собирает все наблюдаемые `unknown_revocation_source` diagnostics из request, а затем завершает evaluation fail-closed;
+- malformed request `validation_time_utc` останавливает evaluation до trust decision с `trust_chain.invalid_validation_time`, `decision_reason=invalid_validation_time` и non-success `revocation_status`.
+
+Детерминизм `T03a`:
+- diagnostics сортируются правилом `error` before `warning`, затем `code`, затем `path`, затем `message`;
+- valid fixtures проверяют канонический JSON для store/result;
+- invalid fixtures проверяют канонический JSON diagnostics.
 - duration не сериализуется, потому что текущий `CompositionGraph` ещё не содержит duration metadata;
 - dry-run builder не занимается wall-clock scheduling, device output, real-time sync, subtitle rendering и audio routing runtime.

@@ -1,0 +1,8 @@
+[
+  {
+    "code": "trust_chain.revoked",
+    "severity": "error",
+    "path": "/subject/revocation_status",
+    "message": "Certificate is revoked by revocation contract"
+  }
+]

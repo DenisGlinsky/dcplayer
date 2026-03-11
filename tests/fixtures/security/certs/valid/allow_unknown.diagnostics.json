@@ -1,0 +1,14 @@
+[
+  {
+    "code": "trust_chain.revocation_unavailable",
+    "severity": "warning",
+    "path": "/subject/revocation_status",
+    "message": "Revocation status is unavailable for the issuer chain"
+  },
+  {
+    "code": "trust_chain.unknown_revocation_source",
+    "severity": "warning",
+    "path": "/revocation_entries[1]/source",
+    "message": "Revocation source is not authoritative for chain evaluation"
+  }
+]

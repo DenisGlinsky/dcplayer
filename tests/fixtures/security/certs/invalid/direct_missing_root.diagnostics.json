@@ -1,0 +1,8 @@
+[
+  {
+    "code": "trust_chain.anchor_missing",
+    "severity": "error",
+    "path": "/issuer_chain[1]",
+    "message": "Trust anchor is missing for the issuer chain"
+  }
+]

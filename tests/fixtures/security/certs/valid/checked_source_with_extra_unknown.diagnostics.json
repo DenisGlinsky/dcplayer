@@ -1,0 +1,8 @@
+[
+  {
+    "code": "trust_chain.unknown_revocation_source",
+    "severity": "warning",
+    "path": "/revocation_entries[2]/source",
+    "message": "Revocation source is not authoritative for chain evaluation"
+  }
+]

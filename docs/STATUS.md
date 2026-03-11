@@ -11,7 +11,7 @@
 
 ## 2. Текущее project snapshot
 
-Сейчас проект находится в состоянии **scaffold baseline + T01a/T01b/T02a/T02b/T02c готовы**.
+Сейчас проект находится в состоянии **scaffold baseline + T01a/T01b/T02a/T02b/T02c/T03a готовы**.
 
 Подтверждено:
 - репозиторий очищен от `build/`, `__MACOSX`, `.DS_Store` и подобных артефактов;
@@ -33,6 +33,11 @@
 - deterministic diagnostics покрывают missing asset id, broken reference, conflicting resolution и broken dependency;
 - deterministic supplemental diagnostics покрывают target not found, unsupported merge mode, base edit-rate mismatch, broken base dependency, conflicting override и asset without valid backing;
 - deterministic timeline diagnostics покрывают not show-ready graph, empty reel list, lane type mismatch, composition_kind/dependency mismatch, invalid edit rate, entry edit-rate mismatch и unsupported graph shape с корректным precedence для global mismatch;
+- реализован baseline PKI/trust-store layer для security control plane;
+- нормализованы `CertificateStore` и `TrustChain` object models;
+- реализованы in-memory certificate import, deterministic chain evaluation и revocation policy baseline;
+- corrective patch для T03a закрывает acceptance fabricated revocation source, синхронизирует `invalid_validation_time` с полным result model, делает `unknown_revocation_source` наблюдаемым даже рядом с invalid revocation input и уточняет, что self-issued non-root certificate остаётся `chain_broken`;
+- deterministic PKI diagnostics покрывают duplicate certificate record, invalid role, missing trust anchor, broken chain, revoked, unknown revocation source, invalid validation time и invalid revocation state;
 - зафиксирован детерминированный формат диагностик `code + severity + path + message`;
 - XML layer декодирует named/numeric entities до доменной validation и принимает UTF-8 BOM;
 - добавлены valid/invalid DCP fixtures и unit tests для `assetmap`/`pkl`/`cpl`;
@@ -62,6 +67,9 @@
 - `OV/VF` resolver + `CompositionGraph`;
 - `supplemental` merge layer + `SupplementalMergePolicy`;
 - `PlaybackTimeline` dry-run builder + canonical JSON serialization;
+- `CertificateStore` builder + canonical JSON serialization;
+- `TrustChain` evaluation + canonical JSON serialization;
+- authoritative revocation source filtering через configured `revocation_sources` и optional request `checked_sources`;
 - backed owner selection для целевого `CPL`;
 - deterministic OV/VF diagnostics и dependency classification;
 - deterministic supplemental diagnostics, policy validation и multi-policy conflict handling;
@@ -70,6 +78,8 @@
 - UTF-8 BOM support for `AssetMap`/`PKL`/`CPL` ingest;
 - DCP fixtures для positive/negative parser cases;
 - playback timeline fixtures для positive/negative dry-run cases;
+- PKI fixtures для positive/negative trust-store и trust-chain scenarios;
+- PKI fixtures для unknown revocation source, configured checked source, successful trust с extra fabricated source, mixed invalid+non-authoritative revocation input, non-authoritative `allow_unknown`, direct leaf missing root c unrelated root, self-issued non-root leaf, missing intermediate и malformed validation time;
 - unit tests `assetmap_parser_test`, `pkl_parser_test` и `cpl_parser_test`;
 - unit test `ov_vf_resolver_unit_test`;
 - integration test `ov_vf_resolver_integration_test`;
@@ -77,6 +87,7 @@
 - integration test `supplemental_merge_integration_test`;
 - unit test `playback_timeline_unit_test`;
 - integration test `playback_timeline_integration_test`;
+- unit test `security_pki_unit_test`;
 - канонические project docs;
 - 34 companion-specs;
 - 39 task-specific `AGENTS.md`.
@@ -92,7 +103,7 @@
 
 ## 4. Evidence baseline
 
-Для веток `T01a`, `T01b`, `T02a`, `T02b` и `T02c` в этом handoff подтверждены следующие команды:
+Для веток `T01a`, `T01b`, `T02a`, `T02b`, `T02c` и `T03a` в этом handoff подтверждены следующие команды:
 
 ```bash
 ./scripts/bootstrap.sh
@@ -103,6 +114,7 @@
 ./scripts/test.sh -R 'ov|vf'
 ./scripts/test.sh -R 'supplemental'
 ./scripts/test.sh -R 'timeline'
+./scripts/test.sh -R 'cert|trust|pki'
 ```
 
 Focused branch tests:
@@ -115,6 +127,7 @@ Focused branch tests:
 - `supplemental_merge_integration_test`
 - `playback_timeline_unit_test`
 - `playback_timeline_integration_test`
+- `security_pki_unit_test`
 
 ## 5. Легенда статусов
 
@@ -125,13 +138,13 @@ Focused branch tests:
 ## 6. Следующая очередь
 
 Первыми готовыми к запуску ветками являются:
-- `T03a` — PKI
+- `T03b` — Pi/ZymKey
 - `T05a` — J2K Backend
 - `T06a` — Watermark Model
 - `T07a` — Audio Sync
 
 Рекомендуемый порядок старта:
-1. `T03a`
+1. `T03b`
 2. `T05a`
 3. `T06a`
 4. `T07a`
@@ -153,7 +166,8 @@ Focused branch tests:
 | T02a | DONE | `OV/VF` resolver, `CompositionGraph`, deterministic diagnostics, valid/invalid fixtures и unit/integration tests реализованы и проверены. |
 | T02b | DONE | Реализованы supplemental merge/override, детерминированные diagnostics, valid/invalid fixtures и branch-focused tests. |
 | T02c | DONE | Реализованы dry-run `PlaybackTimeline`, machine-readable JSON dump, deterministic diagnostics, invariant-check для `composition_kind/dependency_kind`, precedence для `invalid_edit_rate` и global mismatch, valid/invalid fixtures и branch-focused unit/integration tests. |
-| T03a | READY | Security control-plane baseline можно стартовать независимо от DCP parser. |
+| T03a | DONE | Реализованы `CertificateStore`/`TrustChain`, in-memory import, policy-aware authoritative revocation source handling, deterministic diagnostics, metadata-based missing-issuer classification, request-level validation времени, valid/invalid fixtures и unit test `security_pki_unit_test`. |
+| T03b | READY | После baseline PKI можно фиксировать mutual-TLS contract, identity checks и acceptance criteria без возврата в object-model слой. |
 | T05a | READY | Decode abstraction можно проектировать на канонических specs и leaf-level CMake scaffold. |
 | T06a | READY | Watermark contract можно фиксировать на текущих companion-specs. |
 | T07a | READY | `PlaybackTimeline` готов; можно стартовать sync-ветку поверх dry-run timeline контракта. |

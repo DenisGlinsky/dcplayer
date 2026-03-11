@@ -1,0 +1,8 @@
+[
+  {
+    "code": "cert_store.invalid_role",
+    "severity": "error",
+    "path": "/device_certs[1]/role",
+    "message": "Certificate role is not allowed in this store collection"
+  }
+]
