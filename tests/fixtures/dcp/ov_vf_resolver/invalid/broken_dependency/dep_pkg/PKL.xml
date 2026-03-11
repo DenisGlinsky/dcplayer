@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PackingList xmlns="http://www.digicine.com/PROTO-ASDCP-PKL-20040311#">
+  <Id>urn:uuid:20000000-0000-0000-0000-000000000110</Id>
+  <IssueDate>2026-03-11T08:30:00Z</IssueDate>
+  <Issuer>dcplayer-tests</Issuer>
+  <Creator>dcplayer-tests</Creator>
+  <AssetList>
+    <Asset>
+      <Id>urn:uuid:33000000-0000-0000-0000-000000000109</Id>
+      <Hash Algorithm="http://www.w3.org/2001/04/xmlenc#sha256">80112233445566778899AABBCCDDEEFF00112233445566778899AABBCCDDEEFF</Hash>
+      <Size>4096</Size>
+      <Type>application/mxf</Type>
+      <OriginalFileName>MXF/missing_sound.mxf</OriginalFileName>
+    </Asset>
+  </AssetList>
+</PackingList>

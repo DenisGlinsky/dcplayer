@@ -11,7 +11,7 @@
 
 ## 2. Текущее project snapshot
 
-Сейчас проект находится в состоянии **scaffold baseline + T01a/T01b готовы**.
+Сейчас проект находится в состоянии **scaffold baseline + T01a/T01b/T02a готовы**.
 
 Подтверждено:
 - репозиторий очищен от `build/`, `__MACOSX`, `.DS_Store` и подобных артефактов;
@@ -25,9 +25,14 @@
 - CTest содержит реальные unit и integration smoke tests и проходит;
 - реализованы `AssetMap` и `PKL` parser/validator с нормализованными моделями;
 - реализован `CPL` parser/validator с нормализованной моделью composition/reel/track references;
+- реализован OV/VF resolver с нормализованным `CompositionGraph`;
+- owner selection для OV/VF resolver учитывает только PKL-backed CPL candidates;
+- resolver различает local/external dependencies на уровне итогового graph;
+- deterministic diagnostics покрывают missing asset id, broken reference, conflicting resolution и broken dependency;
 - зафиксирован детерминированный формат диагностик `code + severity + path + message`;
 - XML layer декодирует named/numeric entities до доменной validation и принимает UTF-8 BOM;
 - добавлены valid/invalid DCP fixtures и unit tests для `assetmap`/`pkl`/`cpl`;
+- добавлены valid/invalid OV/VF fixtures и unit/integration tests для resolver-а;
 - `TREE.txt` и `manifest.json` регенерируются скриптом.
 
 ## 3. Честный baseline
@@ -48,16 +53,20 @@
 - `PKL` parser + validation;
 - `CPL` parser + validation;
 - cross-validation `PKL -> AssetMap`;
+- `OV/VF` resolver + `CompositionGraph`;
+- backed owner selection для целевого `CPL`;
+- deterministic OV/VF diagnostics и dependency classification;
 - strict XML entity decoding + deterministic malformed-entity diagnostics;
 - UTF-8 BOM support for `AssetMap`/`PKL`/`CPL` ingest;
 - DCP fixtures для positive/negative parser cases;
 - unit tests `assetmap_parser_test`, `pkl_parser_test` и `cpl_parser_test`;
+- unit test `ov_vf_resolver_unit_test`;
+- integration test `ov_vf_resolver_integration_test`;
 - канонические project docs;
 - 34 companion-specs;
 - 39 task-specific `AGENTS.md`.
 
 ### Что ещё не реализовано
-- OV/VF resolver и composition graph;
 - secure module;
 - KDM validation;
 - GPU decode;
@@ -68,7 +77,7 @@
 
 ## 4. Evidence baseline
 
-Для веток `T01a` и `T01b` в этом handoff подтверждены следующие команды:
+Для веток `T01a`, `T01b` и `T02a` в этом handoff подтверждены следующие команды:
 
 ```bash
 ./scripts/bootstrap.sh
@@ -76,12 +85,15 @@
 ./scripts/test.sh
 ./scripts/test.sh -R 'assetmap|pkl'
 ./scripts/test.sh -R 'cpl'
+./scripts/test.sh -R 'ov|vf'
 ```
 
 Focused branch tests:
 - `assetmap_parser_test`
 - `pkl_parser_test`
 - `cpl_parser_test`
+- `ov_vf_resolver_unit_test`
+- `ov_vf_resolver_integration_test`
 
 ## 5. Легенда статусов
 
@@ -92,13 +104,13 @@ Focused branch tests:
 ## 6. Следующая очередь
 
 Первыми готовыми к запуску ветками являются:
-- `T01b` — CPL
+- `T02b` — Supplemental
 - `T03a` — PKI
 - `T05a` — J2K Backend
 - `T06a` — Watermark Model
 
 Рекомендуемый порядок старта:
-1. `T01b`
+1. `T02b`
 2. `T03a`
 3. `T05a`
 4. `T06a`
@@ -117,6 +129,8 @@ Focused branch tests:
 |---|---|---|
 | T01a | DONE | `AssetMap`/`PKL` parse+validation, strict XML decoding/BOM support, fixtures и unit tests реализованы и проверены. |
 | T01b | DONE | `CPL` parse+validation, deterministic diagnostics, fixtures и unit tests реализованы и проверены. |
+| T02a | DONE | `OV/VF` resolver, `CompositionGraph`, deterministic diagnostics, valid/invalid fixtures и unit/integration tests реализованы и проверены. |
+| T02b | READY | Supplemental merge policy можно начинать поверх зафиксированного OV/VF graph/resolver baseline. |
 | T03a | READY | Security control-plane baseline можно стартовать независимо от DCP parser. |
 | T05a | READY | Decode abstraction можно проектировать на канонических specs и leaf-level CMake scaffold. |
 | T06a | READY | Watermark contract можно фиксировать на текущих companion-specs. |

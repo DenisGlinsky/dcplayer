@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AssetMap xmlns="http://www.digicine.com/PROTO-ASDCP-AM-20040311#">
+  <Id>urn:uuid:10000000-0000-0000-0000-000000000105</Id>
+  <Creator>dcplayer-tests</Creator>
+  <VolumeCount>1</VolumeCount>
+  <IssueDate>2026-03-11T08:30:00Z</IssueDate>
+  <Issuer>dcplayer-tests</Issuer>
+  <AssetList>
+    <Asset>
+      <Id>urn:uuid:30000000-0000-0000-0000-000000000105</Id>
+      <ChunkList>
+        <Chunk>
+          <Path>CPL/broken.xml</Path>
+          <VolumeIndex>1</VolumeIndex>
+          <Offset>0</Offset>
+          <Length>2048</Length>
+        </Chunk>
+      </ChunkList>
+    </Asset>
+  </AssetList>
+</AssetMap>

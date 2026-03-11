@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompositionPlaylist xmlns="http://www.digicine.com/PROTO-ASDCP-CPL-20040511#">
+  <Id>urn:uuid:30000000-0000-0000-0000-000000000113</Id>
+  <IssueDate>2026-03-11T08:30:00Z</IssueDate>
+  <Issuer>dcplayer-tests</Issuer>
+  <Creator>dcplayer-tests</Creator>
+  <ContentTitleText>Feature_Stray_Only_113</ContentTitleText>
+  <EditRate>24 1</EditRate>
+  <ReelList>
+    <Reel>
+      <Id>urn:uuid:31000000-0000-0000-0000-000000000115</Id>
+      <AssetList>
+        <MainPicture>
+          <Id>urn:uuid:32000000-0000-0000-0000-000000000114</Id>
+          <EditRate>24 1</EditRate>
+        </MainPicture>
+      </AssetList>
+    </Reel>
+  </ReelList>
+</CompositionPlaylist>

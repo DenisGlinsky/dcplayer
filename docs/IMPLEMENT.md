@@ -121,3 +121,47 @@
 - каждый reel обязан иметь `Id` и хотя бы один поддерживаемый track reference;
 - duplicate `reel_id`, duplicate track type внутри reel и duplicate `asset_id` внутри reel диагностируются явно;
 - `T01b` не валидирует существование asset ID в `AssetMap/PKL`, не делает OV/VF resolving и не строит playback timeline.
+
+## 11. T02a OV/VF resolver baseline
+
+Для `T02a` вводится отдельный resolver-слой в `src/dcp/ov_vf_resolver`, который работает только на уже разобранных и валидированных моделях `AssetMap`, `PKL` и `CPL`.
+
+Вход resolver-а:
+- набор пакетов, где каждый пакет состоит из нормализованных `AssetMap`, `PKL` и нуля или более `CPL`;
+- `composition_id` целевой композиции.
+
+Выход resolver-а:
+- `CompositionGraph` с нормализованными `Reel` и `TrackFile`;
+- детерминированный набор диагностик того же формата `code + severity + path + message`;
+- `validation_status`, вычисляемый тем же правилом, что и в `T01a/T01b`.
+
+Поведение результата `T02a`:
+- при `validation_status = ok | warning` resolver возвращает `CompositionGraph`;
+- при `validation_status = error` resolver возвращает только диагностику и не публикует частичный graph как show-ready результат.
+
+Правила разрешения `T02a`:
+- владелец целевого `CPL` определяется только по backed owner candidate: в пакете должен существовать parsed `CPL` с нужным `composition_id`, `PKL` asset типа `composition_playlist` с тем же id и корректный `AssetMap` backing этого asset;
+- stray/unbacked parsed `CPL` без такого `PKL`/`AssetMap` backing не участвует в owner selection и не создаёт ложный `ov_vf.conflicting_composition_owner`;
+- для каждого `CPL` asset reference resolver сначала пытается разрешить asset в owning package;
+- если owning package не содержит такой `track_file`, resolver ищет backing asset во внешних пакетах и таким образом фиксирует OV/VF dependency;
+- resolver не делает supplemental merge, playback timeline execution, disk existence checks и security/KDM semantics;
+- итоговый `composition_kind` равен `vf`, если хотя бы один track разрешён из внешнего пакета; иначе `ov`.
+
+Минимальные диагностические коды `T02a`:
+- `ov_vf.target_composition_not_found`
+- `ov_vf.conflicting_composition_owner`
+- `ov_vf.missing_asset_id`
+- `ov_vf.broken_reference`
+- `ov_vf.conflicting_asset_resolution`
+- `ov_vf.broken_dependency`
+
+Смысл кодов `T02a`:
+- `missing_asset_id` — для asset reference, у которого нет ни одной backing `PKL` entry ни в одном пакете;
+- `broken_reference` — `PKL` entry существует, но не приводит к валидному `AssetMap` backing asset в ожидаемом пакете разрешения;
+- `conflicting_asset_resolution` — один и тот же внешний asset reference имеет более одного валидного кандидата;
+- `broken_dependency` — хотя бы одна внешняя OV/VF dependency не была разрешена до пригодного к показу `TrackFile`.
+
+Детерминизм `T02a`:
+- diagnostics сортируются тем же правилом: `error` before `warning`, затем `code`, затем `path`;
+- `source_packages` и `missing_assets` в `CompositionGraph` стабильно сортируются лексикографически;
+- `resolved_reels` сохраняют порядок исходного `CPL`.

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PackingList xmlns="http://www.digicine.com/PROTO-ASDCP-PKL-20040311#">
+  <Id>urn:uuid:20000000-0000-0000-0000-000000000104</Id>
+  <IssueDate>2026-03-11T08:30:00Z</IssueDate>
+  <Issuer>dcplayer-tests</Issuer>
+  <Creator>dcplayer-tests</Creator>
+  <AssetList>
+    <Asset>
+      <Id>urn:uuid:30000000-0000-0000-0000-000000000104</Id>
+      <Hash Algorithm="http://www.w3.org/2000/09/xmldsig#sha1">CBEiM0RVZneImaq7zN3u/wARIjM=</Hash>
+      <Size>2048</Size>
+      <Type>text/xml;asdcpKind=CPL</Type>
+      <OriginalFileName>CPL/missing.xml</OriginalFileName>
+    </Asset>
+  </AssetList>
+</PackingList>
