@@ -11,7 +11,7 @@
 
 ## 2. Текущее project snapshot
 
-Сейчас проект находится в состоянии **scaffold baseline + T01a/T01b/T02a/T02b готовы**.
+Сейчас проект находится в состоянии **scaffold baseline + T01a/T01b/T02a/T02b/T02c готовы**.
 
 Подтверждено:
 - репозиторий очищен от `build/`, `__MACOSX`, `.DS_Store` и подобных артефактов;
@@ -27,15 +27,18 @@
 - реализован `CPL` parser/validator с нормализованной моделью composition/reel/track references;
 - реализован OV/VF resolver с нормализованным `CompositionGraph`;
 - реализован supplemental merge/override поверх нормализованного `CompositionGraph`;
+- реализован dry-run `PlaybackTimeline` builder поверх show-ready `CompositionGraph`;
 - owner selection для OV/VF resolver учитывает только PKL-backed CPL candidates;
 - resolver различает local/external dependencies на уровне итогового graph;
 - deterministic diagnostics покрывают missing asset id, broken reference, conflicting resolution и broken dependency;
 - deterministic supplemental diagnostics покрывают target not found, unsupported merge mode, base edit-rate mismatch, broken base dependency, conflicting override и asset without valid backing;
+- deterministic timeline diagnostics покрывают not show-ready graph, empty reel list, lane type mismatch, composition_kind/dependency mismatch, invalid edit rate, entry edit-rate mismatch и unsupported graph shape с корректным precedence для global mismatch;
 - зафиксирован детерминированный формат диагностик `code + severity + path + message`;
 - XML layer декодирует named/numeric entities до доменной validation и принимает UTF-8 BOM;
 - добавлены valid/invalid DCP fixtures и unit tests для `assetmap`/`pkl`/`cpl`;
 - добавлены valid/invalid OV/VF fixtures и unit/integration tests для resolver-а;
 - добавлены valid/invalid supplemental fixtures и unit/integration tests для merge layer;
+- добавлены valid/invalid playback timeline fixtures и unit/integration tests для dry-run builder-а;
 - `TREE.txt` и `manifest.json` регенерируются скриптом.
 
 ## 3. Честный baseline
@@ -58,17 +61,22 @@
 - cross-validation `PKL -> AssetMap`;
 - `OV/VF` resolver + `CompositionGraph`;
 - `supplemental` merge layer + `SupplementalMergePolicy`;
+- `PlaybackTimeline` dry-run builder + canonical JSON serialization;
 - backed owner selection для целевого `CPL`;
 - deterministic OV/VF diagnostics и dependency classification;
 - deterministic supplemental diagnostics, policy validation и multi-policy conflict handling;
+- deterministic timeline diagnostics, precedence for invalid edit-rate fallback/global mismatch и machine-readable timeline dump;
 - strict XML entity decoding + deterministic malformed-entity diagnostics;
 - UTF-8 BOM support for `AssetMap`/`PKL`/`CPL` ingest;
 - DCP fixtures для positive/negative parser cases;
+- playback timeline fixtures для positive/negative dry-run cases;
 - unit tests `assetmap_parser_test`, `pkl_parser_test` и `cpl_parser_test`;
 - unit test `ov_vf_resolver_unit_test`;
 - integration test `ov_vf_resolver_integration_test`;
 - unit test `supplemental_merge_unit_test`;
 - integration test `supplemental_merge_integration_test`;
+- unit test `playback_timeline_unit_test`;
+- integration test `playback_timeline_integration_test`;
 - канонические project docs;
 - 34 companion-specs;
 - 39 task-specific `AGENTS.md`.
@@ -84,7 +92,7 @@
 
 ## 4. Evidence baseline
 
-Для веток `T01a`, `T01b`, `T02a` и `T02b` в этом handoff подтверждены следующие команды:
+Для веток `T01a`, `T01b`, `T02a`, `T02b` и `T02c` в этом handoff подтверждены следующие команды:
 
 ```bash
 ./scripts/bootstrap.sh
@@ -94,6 +102,7 @@
 ./scripts/test.sh -R 'cpl'
 ./scripts/test.sh -R 'ov|vf'
 ./scripts/test.sh -R 'supplemental'
+./scripts/test.sh -R 'timeline'
 ```
 
 Focused branch tests:
@@ -104,6 +113,8 @@ Focused branch tests:
 - `ov_vf_resolver_integration_test`
 - `supplemental_merge_unit_test`
 - `supplemental_merge_integration_test`
+- `playback_timeline_unit_test`
+- `playback_timeline_integration_test`
 
 ## 5. Легенда статусов
 
@@ -117,11 +128,13 @@ Focused branch tests:
 - `T03a` — PKI
 - `T05a` — J2K Backend
 - `T06a` — Watermark Model
+- `T07a` — Audio Sync
 
 Рекомендуемый порядок старта:
 1. `T03a`
 2. `T05a`
 3. `T06a`
+4. `T07a`
 
 ## 7. Фаза A — Foundation
 
@@ -139,10 +152,11 @@ Focused branch tests:
 | T01b | DONE | `CPL` parse+validation, deterministic diagnostics, fixtures и unit tests реализованы и проверены. |
 | T02a | DONE | `OV/VF` resolver, `CompositionGraph`, deterministic diagnostics, valid/invalid fixtures и unit/integration tests реализованы и проверены. |
 | T02b | DONE | Реализованы supplemental merge/override, детерминированные diagnostics, valid/invalid fixtures и branch-focused tests. |
+| T02c | DONE | Реализованы dry-run `PlaybackTimeline`, machine-readable JSON dump, deterministic diagnostics, invariant-check для `composition_kind/dependency_kind`, precedence для `invalid_edit_rate` и global mismatch, valid/invalid fixtures и branch-focused unit/integration tests. |
 | T03a | READY | Security control-plane baseline можно стартовать независимо от DCP parser. |
 | T05a | READY | Decode abstraction можно проектировать на канонических specs и leaf-level CMake scaffold. |
 | T06a | READY | Watermark contract можно фиксировать на текущих companion-specs. |
-| T07a | BLOCKED | Ждёт `T02c`, потому что опирается на `PlaybackTimeline` в рабочем виде. |
+| T07a | READY | `PlaybackTimeline` готов; можно стартовать sync-ветку поверх dry-run timeline контракта. |
 
 ## 9. Остальные ветки
 

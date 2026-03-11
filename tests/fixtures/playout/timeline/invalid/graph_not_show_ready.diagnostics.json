@@ -1,0 +1,8 @@
+[
+  {
+    "code": "timeline.graph_not_show_ready",
+    "severity": "error",
+    "path": "/missing_assets",
+    "message": "CompositionGraph contains unresolved assets and is not show-ready"
+  }
+]

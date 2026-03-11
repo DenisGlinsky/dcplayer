@@ -26,6 +26,7 @@
 - После supplemental merge `source_packages` пересчитывается по фактически используемым `TrackFile` и не должен содержать пакеты, которые больше не участвуют в итоговом graph.
 - После supplemental merge публикация graph допустима только если ни один supplemental reference не оставил graph в состоянии unresolved/broken override.
 - После supplemental merge explicit base dependency допустима только при полном совпадении `asset_id` и `edit_rate` с уже существующим base `TrackFile`.
+- Dry-run `PlaybackTimeline` builder обязан отклонять graph как неконсистентный, если фактические `TrackFile.dependency_kind` противоречат `composition_kind`.
 
 ## Связи с другими объектами
 

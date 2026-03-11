@@ -1,0 +1,46 @@
+{
+  "composition_id": "30000000-0000-0000-0000-000000000101",
+  "origin_package_id": "20000000-0000-0000-0000-000000000101",
+  "composition_kind": "ov",
+  "source_packages": [
+    "20000000-0000-0000-0000-000000000101"
+  ],
+  "reel_entries": [
+    {
+      "entry_index": 0,
+      "reel_id": "31000000-0000-0000-0000-000000000101",
+      "edit_rate": {
+        "numerator": 24,
+        "denominator": 1
+      },
+      "picture": {
+        "asset_id": "32000000-0000-0000-0000-000000000101",
+        "track_type": "picture",
+        "edit_rate": {
+          "numerator": 24,
+          "denominator": 1
+        },
+        "resolved_path": "MXF/ov_picture.mxf",
+        "source_package_id": "20000000-0000-0000-0000-000000000101",
+        "dependency_kind": "local"
+      },
+      "sound": {
+        "asset_id": "33000000-0000-0000-0000-000000000101",
+        "track_type": "sound",
+        "edit_rate": {
+          "numerator": 24,
+          "denominator": 1
+        },
+        "resolved_path": "MXF/ov_sound.mxf",
+        "source_package_id": "20000000-0000-0000-0000-000000000101",
+        "dependency_kind": "local"
+      },
+      "subtitle": null
+    }
+  ],
+  "lane_summary": {
+    "picture": 1,
+    "sound": 1,
+    "subtitle": 0
+  }
+}

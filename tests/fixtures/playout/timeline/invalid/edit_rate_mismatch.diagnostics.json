@@ -1,0 +1,8 @@
+[
+  {
+    "code": "timeline.entry_edit_rate_mismatch",
+    "severity": "error",
+    "path": "/resolved_reels[1]",
+    "message": "All lanes within a timeline entry must share the same edit_rate"
+  }
+]
