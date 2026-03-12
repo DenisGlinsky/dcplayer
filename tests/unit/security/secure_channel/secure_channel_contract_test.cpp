@@ -87,6 +87,17 @@ int main() {
     }
 
     {
+        const auto json = read_file(fixture_root / "invalid" / "duplicate_revocation_status.contract.json");
+        const auto parsed = secure_channel::parse_secure_channel_contract(json);
+
+        expect(!parsed.ok(), "Duplicate accepted_revocation_statuses fixture must fail");
+        expect(!parsed.value.has_value(), "Duplicate accepted_revocation_statuses fixture must not yield a value");
+        expect(secure_channel::diagnostics_to_json(parsed.diagnostics) ==
+                   read_file(fixture_root / "invalid" / "duplicate_revocation_status.diagnostics.json"),
+               "Unexpected duplicate accepted_revocation_statuses diagnostics");
+    }
+
+    {
         const auto json = read_file(fixture_root / "invalid" / "duplicate_checked_source.contract.json");
         const auto parsed = secure_channel::parse_secure_channel_contract(json);
 
@@ -95,6 +106,17 @@ int main() {
         expect(secure_channel::diagnostics_to_json(parsed.diagnostics) ==
                    read_file(fixture_root / "invalid" / "duplicate_checked_source.diagnostics.json"),
                "Unexpected duplicate checked_sources diagnostics");
+    }
+
+    {
+        const auto json = read_file(fixture_root / "invalid" / "duplicate_supported_api_name.contract.json");
+        const auto parsed = secure_channel::parse_security_module_contract(json);
+
+        expect(!parsed.ok(), "Duplicate supported_api_names fixture must fail");
+        expect(!parsed.value.has_value(), "Duplicate supported_api_names fixture must not yield a value");
+        expect(secure_channel::diagnostics_to_json(parsed.diagnostics) ==
+                   read_file(fixture_root / "invalid" / "duplicate_supported_api_name.diagnostics.json"),
+               "Unexpected duplicate supported_api_names diagnostics");
     }
 
     {

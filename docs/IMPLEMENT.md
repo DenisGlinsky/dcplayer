@@ -287,17 +287,49 @@
 - `payload_type` детерминированно связан с `api_name` и направлением envelope-а;
 - при parse/validation ошибке partial object не публикуется как valid result.
 
-Минимальные диагностические коды `T03b`:
-- `secure_channel.invalid_server_role`
-- `secure_channel.invalid_client_role`
-- `secure_channel.role_mismatch`
-- `secure_channel.invalid_peer_identity`
-- `secure_channel.invalid_channel_binding`
-- `secure_channel.missing_trust_binding`
-- `secure_channel.peer_not_trusted`
-- `secure_channel.unauthorized_api`
-- `secure_channel.invalid_payload_contract`
-- `secure_channel.request_id_mismatch`
+Публичный diagnostic surface `T03b`:
+- structural parse/shape:
+  - `secure_channel.json_malformed`
+  - `secure_channel.missing_field`
+  - `secure_channel.invalid_type`
+  - `secure_channel.invalid_value`
+- enum/value normalization:
+  - `secure_channel.invalid_role`
+  - `secure_channel.invalid_api_name`
+  - `secure_channel.invalid_revocation_status`
+  - `secure_channel.invalid_trust_decision`
+  - `secure_channel.invalid_trust_reason`
+  - `secure_channel.invalid_fingerprint`
+  - `secure_channel.invalid_time`
+  - `secure_channel.invalid_status`
+  - `secure_channel.invalid_severity`
+- contract/envelope invariants:
+  - `secure_channel.invalid_server_role`
+  - `secure_channel.invalid_client_role`
+  - `secure_channel.role_mismatch`
+  - `secure_channel.invalid_peer_identity`
+  - `secure_channel.invalid_channel_binding`
+  - `secure_channel.missing_trust_binding`
+  - `secure_channel.peer_not_trusted`
+  - `secure_channel.unauthorized_api`
+  - `secure_channel.invalid_payload_contract`
+  - `secure_channel.invalid_request_id`
+  - `secure_channel.request_id_mismatch`
+  - `secure_channel.unexpected_response_diagnostics`
+  - `secure_channel.missing_response_diagnostics`
+  - `secure_channel.invalid_acl_binding`
+- duplicate collection guards:
+  - `secure_channel.duplicate_revocation_status`
+  - `secure_channel.duplicate_allowed_api_name`
+  - `secure_channel.duplicate_checked_source`
+  - `secure_channel.duplicate_san_entry`
+  - `secure_channel.duplicate_supported_api_name`
+- baseline ref validation:
+  - `secure_channel.invalid_secure_channel_ref`
+  - `secure_channel.invalid_request_envelope_ref`
+  - `secure_channel.invalid_response_envelope_ref`
+
+В `T03b` эти коды публичны на contract/envelope surface и не считаются transport/runtime-диагностикой.
 
 Сознательные ограничения `T03b`:
 - нет живого TLS handshake;

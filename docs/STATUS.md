@@ -40,6 +40,7 @@
 - реализованы machine-readable `SecureChannelContract`, request/response `ProtectedApiEnvelope` и `SecurityModuleContract`;
 - реализованы metadata-level identity checks, trust binding и ACL baseline для `pi_zymkey <-> ubuntu_tpm`;
 - deterministic diagnostics покрывают invalid server/client role, role mismatch, invalid peer identity, missing trust binding, untrusted peer, unauthorized API и response request-id mismatch;
+- `docs/IMPLEMENT.md` синхронизирован с полным публичным `T03b` diagnostic surface, включая duplicate collection codes и baseline invalid ref diagnostics;
 - добавлены valid/invalid secure channel fixtures и branch-focused unit tests;
 - добавлены valid/invalid DCP fixtures и unit tests для `assetmap`/`pkl`/`cpl`;
 - добавлены valid/invalid OV/VF fixtures и unit/integration tests для resolver-а;
@@ -73,6 +74,7 @@
 - `ProtectedApiEnvelope` request/response validation;
 - `SecurityModuleContract` baseline для `pi_zymkey`;
 - baseline host contract factory для `spb1`;
+- regression coverage для `secure_channel.duplicate_revocation_status` и `secure_channel.duplicate_supported_api_name`;
 - backed owner selection для целевого `CPL`;
 - deterministic OV/VF diagnostics и dependency classification;
 - deterministic supplemental diagnostics, policy validation и multi-policy conflict handling;
