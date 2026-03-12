@@ -1,0 +1,8 @@
+[
+  {
+    "code": "secure_channel.unauthorized_api",
+    "severity": "error",
+    "path": "/api_name",
+    "message": "caller_role is not authorized for api_name"
+  }
+]

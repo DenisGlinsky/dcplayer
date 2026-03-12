@@ -1,0 +1,20 @@
+[
+  {
+    "code": "secure_channel.invalid_request_envelope_ref",
+    "severity": "error",
+    "path": "/request_envelope_ref",
+    "message": "request_envelope_ref must reference the protected request baseline"
+  },
+  {
+    "code": "secure_channel.invalid_response_envelope_ref",
+    "severity": "error",
+    "path": "/response_envelope_ref",
+    "message": "response_envelope_ref must reference the protected response baseline"
+  },
+  {
+    "code": "secure_channel.invalid_secure_channel_ref",
+    "severity": "error",
+    "path": "/secure_channel_id",
+    "message": "secure_channel_id must reference the T03b secure channel baseline"
+  }
+]

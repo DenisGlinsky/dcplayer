@@ -1,0 +1,8 @@
+[
+  {
+    "code": "secure_channel.role_mismatch",
+    "severity": "error",
+    "path": "/caller_identity/role",
+    "message": "caller_identity.role must match caller_role"
+  }
+]

@@ -1,0 +1,8 @@
+[
+  {
+    "code": "secure_channel.missing_trust_binding",
+    "severity": "error",
+    "path": "/auth_context/peer_trust/subject_fingerprint",
+    "message": "peer_trust.subject_fingerprint must bind to caller_identity.certificate_fingerprint"
+  }
+]

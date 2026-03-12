@@ -1,0 +1,8 @@
+[
+  {
+    "code": "secure_channel.duplicate_san_entry",
+    "severity": "error",
+    "path": "/caller_identity/san_dns_names[2]",
+    "message": "SAN entry duplicates an earlier entry"
+  }
+]

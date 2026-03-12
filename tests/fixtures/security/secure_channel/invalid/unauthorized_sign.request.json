@@ -1,0 +1,49 @@
+{
+  "request_id": "11111111-2222-4333-8444-555555555555",
+  "api_name": "sign",
+  "caller_role": "ubuntu_tpm",
+  "caller_identity": {
+    "role": "ubuntu_tpm",
+    "device_id": "ubuntu-tpm-spb1-01",
+    "certificate_fingerprint": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "subject_dn": "CN=dcplayer-host-client,O=dcplayer",
+    "san_dns_names": [
+      "media-host.local"
+    ],
+    "san_uri_names": [
+      "urn:dcplayer:spb1:ubuntu_tpm:01"
+    ]
+  },
+  "auth_context": {
+    "channel_id": "spb1.control.v1",
+    "mutual_tls": true,
+    "local_role": "pi_zymkey",
+    "peer_trust": {
+      "subject_fingerprint": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "issuer_chain": [
+        "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+      ],
+      "validation_time_utc": "2026-03-12T09:00:00Z",
+      "revocation_status": "good",
+      "decision": "trusted",
+      "decision_reason": "ok",
+      "checked_sources": [
+        "crl_cache",
+        "intermediates",
+        "roots"
+      ]
+    },
+    "checked_sources": [
+      "acl",
+      "trust_chain"
+    ]
+  },
+  "payload": {
+    "payload_type": "sign_request",
+    "schema_ref": "spb1.sign.request.v1",
+    "body": {
+      "digest_ref": "sha256:sample-digest-001",
+      "key_slot": "server-signing-key-01"
+    }
+  }
+}

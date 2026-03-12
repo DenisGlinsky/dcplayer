@@ -8,5 +8,6 @@ target_include_directories(dcplayer_security_host_spb1_contract
 target_link_libraries(dcplayer_security_host_spb1_contract
     INTERFACE
         dcplayer_core
+        dcplayer_security_secure_channel
         dcplayer_warnings
 )
