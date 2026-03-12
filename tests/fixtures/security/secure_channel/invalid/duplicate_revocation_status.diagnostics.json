@@ -1,0 +1,8 @@
+[
+  {
+    "code": "secure_channel.duplicate_revocation_status",
+    "severity": "error",
+    "path": "/trust_requirements/accepted_revocation_statuses[2]",
+    "message": "Revocation status duplicates an earlier entry"
+  }
+]
