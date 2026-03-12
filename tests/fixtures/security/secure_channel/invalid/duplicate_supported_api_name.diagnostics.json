@@ -1,0 +1,8 @@
+[
+  {
+    "code": "secure_channel.duplicate_supported_api_name",
+    "severity": "error",
+    "path": "/supported_api_names[2]",
+    "message": "API name duplicates an earlier entry"
+  }
+]
