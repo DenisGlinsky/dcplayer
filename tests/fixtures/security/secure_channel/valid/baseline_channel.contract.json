@@ -1,0 +1,55 @@
+{
+  "channel_id": "spb1.control.v1",
+  "server_role": "pi_zymkey",
+  "client_role": "ubuntu_tpm",
+  "tls_profile": "mtls_device_control_v1",
+  "trust_requirements": {
+    "certificate_store_ref": "cert_store.control_plane.v1",
+    "required_decision": "trusted",
+    "required_decision_reason": "ok",
+    "accepted_revocation_statuses": [
+      "good"
+    ],
+    "required_checked_sources": [
+      "crl_cache",
+      "intermediates",
+      "roots"
+    ]
+  },
+  "server_identity": {
+    "role": "pi_zymkey",
+    "device_id": "pi-zymkey-spb1-01",
+    "certificate_fingerprint": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "subject_dn": "CN=dcplayer-spb1-server,O=dcplayer",
+    "san_dns_names": [
+      "spb1.local"
+    ],
+    "san_uri_names": [
+      "urn:dcplayer:spb1:pi_zymkey:01"
+    ]
+  },
+  "client_identity": {
+    "role": "ubuntu_tpm",
+    "device_id": "ubuntu-tpm-spb1-01",
+    "certificate_fingerprint": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "subject_dn": "CN=dcplayer-host-client,O=dcplayer",
+    "san_dns_names": [
+      "media-host.local"
+    ],
+    "san_uri_names": [
+      "urn:dcplayer:spb1:ubuntu_tpm:01"
+    ]
+  },
+  "acl": [
+    {
+      "caller_role": "ubuntu_tpm",
+      "allowed_api_names": [
+        "sign",
+        "unwrap",
+        "decrypt",
+        "health",
+        "identity"
+      ]
+    }
+  ]
+}

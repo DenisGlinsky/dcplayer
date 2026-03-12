@@ -11,7 +11,7 @@
 
 ## 2. Текущее project snapshot
 
-Сейчас проект находится в состоянии **scaffold baseline + T01a/T01b/T02a/T02b/T02c готовы**.
+Сейчас проект находится в состоянии **scaffold baseline + T01a/T01b/T02a/T02b/T02c/T03b готовы; T03a desync в текущем worktree**.
 
 Подтверждено:
 - репозиторий очищен от `build/`, `__MACOSX`, `.DS_Store` и подобных артефактов;
@@ -35,6 +35,12 @@
 - deterministic timeline diagnostics покрывают not show-ready graph, empty reel list, lane type mismatch, composition_kind/dependency mismatch, invalid edit rate, entry edit-rate mismatch и unsupported graph shape с корректным precedence для global mismatch;
 - зафиксирован детерминированный формат диагностик `code + severity + path + message`;
 - XML layer декодирует named/numeric entities до доменной validation и принимает UTF-8 BOM;
+- зафиксирован spec-level PKI result model для `CertificateStore` / `TrustChain`, который используется как trust input для secure control plane;
+- реализован `secure_channel` contract/model слой без real transport;
+- реализованы machine-readable `SecureChannelContract`, request/response `ProtectedApiEnvelope` и `SecurityModuleContract`;
+- реализованы metadata-level identity checks, trust binding и ACL baseline для `pi_zymkey <-> ubuntu_tpm`;
+- deterministic diagnostics покрывают invalid server/client role, role mismatch, invalid peer identity, missing trust binding, untrusted peer, unauthorized API и response request-id mismatch;
+- добавлены valid/invalid secure channel fixtures и branch-focused unit tests;
 - добавлены valid/invalid DCP fixtures и unit tests для `assetmap`/`pkl`/`cpl`;
 - добавлены valid/invalid OV/VF fixtures и unit/integration tests для resolver-а;
 - добавлены valid/invalid supplemental fixtures и unit/integration tests для merge layer;
@@ -62,6 +68,11 @@
 - `OV/VF` resolver + `CompositionGraph`;
 - `supplemental` merge layer + `SupplementalMergePolicy`;
 - `PlaybackTimeline` dry-run builder + canonical JSON serialization;
+- spec-level `CertificateStore` / `TrustChain` PKI result-model baseline;
+- `secure_channel` object model, canonical JSON serialization и authority checks;
+- `ProtectedApiEnvelope` request/response validation;
+- `SecurityModuleContract` baseline для `pi_zymkey`;
+- baseline host contract factory для `spb1`;
 - backed owner selection для целевого `CPL`;
 - deterministic OV/VF diagnostics и dependency classification;
 - deterministic supplemental diagnostics, policy validation и multi-policy conflict handling;
@@ -77,12 +88,18 @@
 - integration test `supplemental_merge_integration_test`;
 - unit test `playback_timeline_unit_test`;
 - integration test `playback_timeline_integration_test`;
+- unit tests `secure_channel_contract_unit_test` и `spb1_protected_api_unit_test`;
 - канонические project docs;
 - 34 companion-specs;
 - 39 task-specific `AGENTS.md`.
 
 ### Что ещё не реализовано
 - secure module;
+- `src/security_api/certs/**` и `tests/unit/security/pki/**` остаются scaffold-only в текущем дереве;
+- real mutual-TLS transport;
+- TPM/ZymKey device integration;
+- secure clock;
+- security logs;
 - KDM validation;
 - GPU decode;
 - forensic watermark insertion;
@@ -92,7 +109,7 @@
 
 ## 4. Evidence baseline
 
-Для веток `T01a`, `T01b`, `T02a`, `T02b` и `T02c` в этом handoff подтверждены следующие команды:
+Для веток `T01a`, `T01b`, `T02a`, `T02b`, `T02c` и `T03b` в этом handoff подтверждены следующие команды:
 
 ```bash
 ./scripts/bootstrap.sh
@@ -103,6 +120,7 @@
 ./scripts/test.sh -R 'ov|vf'
 ./scripts/test.sh -R 'supplemental'
 ./scripts/test.sh -R 'timeline'
+./scripts/test.sh -R 'secure|channel|spb1'
 ```
 
 Focused branch tests:
@@ -115,23 +133,26 @@ Focused branch tests:
 - `supplemental_merge_integration_test`
 - `playback_timeline_unit_test`
 - `playback_timeline_integration_test`
+- `secure_channel_contract_unit_test`
+- `spb1_protected_api_unit_test`
 
 ## 5. Легенда статусов
 
 - **DONE** — задача выполнена и подтверждена evidence.
 - **READY** — все зависимости закрыты; можно открывать отдельную ветку.
 - **BLOCKED** — задача определена, но ждёт завершения зависимостей.
+- **DESYNC** — companion-spec или docs существуют, но текущий worktree не подтверждает заявленную реализацию/evidence.
 
 ## 6. Следующая очередь
 
 Первыми готовыми к запуску ветками являются:
-- `T03a` — PKI
+- `T03c` — ACL/API
 - `T05a` — J2K Backend
 - `T06a` — Watermark Model
 - `T07a` — Audio Sync
 
 Рекомендуемый порядок старта:
-1. `T03a`
+1. `T03c`
 2. `T05a`
 3. `T06a`
 4. `T07a`
@@ -153,10 +174,12 @@ Focused branch tests:
 | T02a | DONE | `OV/VF` resolver, `CompositionGraph`, deterministic diagnostics, valid/invalid fixtures и unit/integration tests реализованы и проверены. |
 | T02b | DONE | Реализованы supplemental merge/override, детерминированные diagnostics, valid/invalid fixtures и branch-focused tests. |
 | T02c | DONE | Реализованы dry-run `PlaybackTimeline`, machine-readable JSON dump, deterministic diagnostics, invariant-check для `composition_kind/dependency_kind`, precedence для `invalid_edit_rate` и global mismatch, valid/invalid fixtures и branch-focused unit/integration tests. |
-| T03a | READY | Security control-plane baseline можно стартовать независимо от DCP parser. |
+| T03a | DESYNC | `CertificateStore`/`TrustChain` specs присутствуют и используются `T03b`, но `src/security_api/certs/**` и `tests/unit/security/pki/**` в текущем worktree остаются scaffold-only, поэтому `DONE` здесь не подтверждён. |
+| T03b | DONE | Реализованы secure channel contract, protected request/response envelopes, metadata-level identity/trust checks, ACL baseline, fixtures и branch-focused unit tests. |
 | T05a | READY | Decode abstraction можно проектировать на канонических specs и leaf-level CMake scaffold. |
 | T06a | READY | Watermark contract можно фиксировать на текущих companion-specs. |
 | T07a | READY | `PlaybackTimeline` готов; можно стартовать sync-ветку поверх dry-run timeline контракта. |
+| T03c | READY | Базовый protected envelope и ACL semantics уже формализованы в `T03b`; можно уточнять API-level surface поверх текущего контракта. |
 
 ## 9. Остальные ветки
 

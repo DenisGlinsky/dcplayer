@@ -1,0 +1,8 @@
+[
+  {
+    "code": "secure_channel.duplicate_allowed_api_name",
+    "severity": "error",
+    "path": "/acl[1]/allowed_api_names[2]",
+    "message": "API name duplicates an earlier entry"
+  }
+]

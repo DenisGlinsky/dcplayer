@@ -260,3 +260,47 @@
 - timeline остаётся reel-level, а не frame/runtime-level;
 - duration не сериализуется, потому что текущий `CompositionGraph` ещё не содержит duration metadata;
 - dry-run builder не занимается wall-clock scheduling, device output, real-time sync, subtitle rendering и audio routing runtime.
+ 
+## 14. T03b secure channel baseline
+
+Для `T03b` вводится отдельный model/validation слой в `src/security_api/secure_channel`,
+который работает только на contract/envelope уровне и не реализует real transport.
+
+Вход `T03b`:
+- JSON `SecureChannelContract`;
+- JSON `ProtectedApiEnvelope` request/response;
+- JSON `SecurityModuleContract`;
+- trust summary, уже совместимый по полям с `TrustChain` из `T03a`.
+
+Выход `T03b`:
+- нормализованные contract objects;
+- детерминированные diagnostics формата `code + severity + path + message`;
+- baseline authority decision для `caller_role -> api_name`;
+- response validation без transport/runtime side effects.
+
+Правила `T03b`:
+- `server_role` фиксирован как `pi_zymkey`, `client_role` как `ubuntu_tpm`;
+- mutual-auth выражается через `auth_context.mutual_tls=true` и trust summary, а не через живой TLS state;
+- binding `peer_trust.subject_fingerprint -> caller_identity.certificate_fingerprint` обязателен;
+- trust decision зависит от `decision`, `decision_reason`, `revocation_status` и `checked_sources`;
+- ACL deny и role mismatch диагностируются до реального transport integration;
+- `payload_type` детерминированно связан с `api_name` и направлением envelope-а;
+- при parse/validation ошибке partial object не публикуется как valid result.
+
+Минимальные диагностические коды `T03b`:
+- `secure_channel.invalid_server_role`
+- `secure_channel.invalid_client_role`
+- `secure_channel.role_mismatch`
+- `secure_channel.invalid_peer_identity`
+- `secure_channel.invalid_channel_binding`
+- `secure_channel.missing_trust_binding`
+- `secure_channel.peer_not_trusted`
+- `secure_channel.unauthorized_api`
+- `secure_channel.invalid_payload_contract`
+- `secure_channel.request_id_mismatch`
+
+Сознательные ограничения `T03b`:
+- нет живого TLS handshake;
+- нет socket/HTTP/gRPC transport;
+- нет TPM/ZymKey device integration;
+- нет secure clock, security logs, KDM и runtime playback logic.

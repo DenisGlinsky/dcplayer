@@ -1,0 +1,26 @@
+{
+  "module_id": "spb1.pi_zymkey.module.v1",
+  "module_role": "pi_zymkey",
+  "secure_channel_id": "spb1.control.v2",
+  "request_envelope_ref": "protected_request.v2",
+  "response_envelope_ref": "protected_response.v2",
+  "supported_api_names": [
+    "sign",
+    "unwrap",
+    "decrypt",
+    "health",
+    "identity"
+  ],
+  "server_identity": {
+    "role": "pi_zymkey",
+    "device_id": "pi-zymkey-spb1-01",
+    "certificate_fingerprint": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "subject_dn": "CN=dcplayer-spb1-server,O=dcplayer",
+    "san_dns_names": [
+      "spb1.local"
+    ],
+    "san_uri_names": [
+      "urn:dcplayer:spb1:pi_zymkey:01"
+    ]
+  }
+}

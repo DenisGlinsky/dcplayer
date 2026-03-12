@@ -1,0 +1,8 @@
+[
+  {
+    "code": "secure_channel.request_id_mismatch",
+    "severity": "error",
+    "path": "/request_id",
+    "message": "response.request_id must match request.request_id"
+  }
+]

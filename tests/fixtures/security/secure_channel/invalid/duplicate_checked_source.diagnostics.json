@@ -1,0 +1,8 @@
+[
+  {
+    "code": "secure_channel.duplicate_checked_source",
+    "severity": "error",
+    "path": "/trust_requirements/required_checked_sources[3]",
+    "message": "Checked source duplicates an earlier entry"
+  }
+]

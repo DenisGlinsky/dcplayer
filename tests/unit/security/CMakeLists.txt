@@ -1,4 +1,5 @@
 add_subdirectory(pki)
+add_subdirectory(secure_channel)
 add_subdirectory(api)
 add_subdirectory(kdm)
 add_subdirectory(time)
