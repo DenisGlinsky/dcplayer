@@ -1,0 +1,8 @@
+[
+  {
+    "code": "secure_time.invalid_time_source",
+    "severity": "error",
+    "path": "/time_source",
+    "message": "time_source contains an unsupported value"
+  }
+]

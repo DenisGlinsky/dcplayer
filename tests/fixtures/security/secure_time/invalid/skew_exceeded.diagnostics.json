@@ -1,0 +1,8 @@
+[
+  {
+    "code": "secure_time.skew_exceeded",
+    "severity": "error",
+    "path": "/skew_seconds",
+    "message": "skew exceeds policy limit"
+  }
+]

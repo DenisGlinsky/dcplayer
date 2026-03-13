@@ -1,6 +1,7 @@
 #pragma once
 
 #include "secure_channel.hpp"
+#include "secure_time.hpp"
 
 #include <map>
 #include <string>
@@ -71,6 +72,29 @@ namespace dcplayer::security_api::host_spb1_contract {
                 .san_dns_names = {"spb1.local"},
                 .san_uri_names = {"urn:dcplayer:spb1:pi_zymkey:01"},
             },
+    };
+}
+
+[[nodiscard]] inline secure_time::SecureClockPolicy make_baseline_secure_clock_policy() {
+    return secure_time::SecureClockPolicy{
+        .clock_id = "spb1.secure_clock.v1",
+        .max_allowed_skew_seconds = 30U,
+        .freshness_window_seconds = 300U,
+        .monotonic_required = true,
+        .allowed_time_sources =
+            {
+                secure_time::TimeSource::rtc_secure,
+                secure_time::TimeSource::imported_secure_time,
+            },
+        .fail_closed_on_untrusted_time = true,
+    };
+}
+
+[[nodiscard]] inline std::vector<secure_channel::ApiName> secure_time_gated_api_names() {
+    return {
+        secure_channel::ApiName::sign,
+        secure_channel::ApiName::unwrap,
+        secure_channel::ApiName::decrypt,
     };
 }
 

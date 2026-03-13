@@ -489,3 +489,91 @@ Tamper/recovery state machine `T03d`:
 - нет secure clock source и real time-discipline logic;
 - нет encrypted audit storage, signing или encryption реальных log blobs;
 - нет TPM/ZymKey runtime integration, GPIO tamper plumbing, KDM и playback/runtime crypto.
+
+## 17. T03e secure time model
+
+Для `T03e` вводится отдельный model/validation слой в `src/security_api/secure_time`,
+который фиксирует secure-time semantics без RTC/device I/O и без live clock synchronization.
+
+Вход `T03e`:
+- JSON `SecureClockPolicy`;
+- JSON `SecureTimeStatus`;
+- baseline time-source vocabulary;
+- host-side baseline policy для `spb1`.
+
+Выход `T03e`:
+- нормализованные `SecureClockPolicy` и `SecureTimeStatus`;
+- детерминированные diagnostics формата `code + severity + path + message`;
+- canonical JSON serialization для valid policy/status objects;
+- model-level trust/time gate result c полями `trusted`, `usable` и `timestamp_dependent_operations_allowed`.
+
+Baseline policy fields `T03e`:
+- `clock_id`;
+- `max_allowed_skew_seconds`;
+- `freshness_window_seconds`;
+- `monotonic_required`;
+- `allowed_time_sources`;
+- `fail_closed_on_untrusted_time`.
+
+Baseline secure-time status `T03e`:
+- `secure_time_status`;
+- `current_time_utc`;
+- `time_source`;
+- `source_role`;
+- `source_trust_state`;
+- `skew_seconds`;
+- `drift_state`;
+- `freshness`;
+- `last_update_utc`;
+- `monotonicity_status`;
+- `tamper_time_state`.
+
+Baseline source kinds `T03e`:
+- `rtc_secure`
+- `rtc_untrusted`
+- `imported_secure_time`
+- `operator_set_time_placeholder`
+- `unknown`
+
+Gating semantics `T03e`:
+- secure time считается trusted только если `secure_time_status == trusted`, source разрешён policy, trust-state trusted, freshness/skew внутри budget-а, monotonicity выполняется и tamper-state чистый;
+- secure time считается usable только если `secure_time_status == trusted` и нет hard-block условий по unavailable/policy/freshness/skew/monotonicity/tamper;
+- `tamper_time_state != clear` и `secure_time_status=unavailable` сводятся к первичному `secure_time.secure_time_unavailable` без наслаивания вторичных source/policy diagnostics;
+- `stale`, `skew_exceeded`, `non_monotonic` и `policy_source_not_allowed` всегда закрывают gate для timestamp-dependent operations;
+- `secure_time_status != trusted` всегда закрывает gate, включая `degraded` и `untrusted`, независимо от `fail_closed_on_untrusted_time`;
+- `untrusted_time_source` переводится в warning-only состояние только при `fail_closed_on_untrusted_time=false` и только для otherwise-trusted snapshot;
+- host baseline помечает `sign`, `unwrap` и `decrypt` как secure-time-gated APIs, а `health` / `identity` оставляет диагностическими.
+
+Публичный diagnostic surface `T03e`:
+- `secure_time.json_malformed`
+- `secure_time.invalid_type`
+- `secure_time.invalid_value`
+- `secure_time.invalid_time_format`
+- `secure_time.invalid_time_source`
+- `secure_time.untrusted_time_source`
+- `secure_time.stale_time`
+- `secure_time.skew_exceeded`
+- `secure_time.non_monotonic_time`
+- `secure_time.missing_required_time_field`
+- `secure_time.policy_source_not_allowed`
+- `secure_time.secure_time_unavailable`
+
+Canonical normalization `T03e`:
+- policy/status сериализуются в JSON `snake_case`;
+- integer budgets и `skew_seconds` сериализуются числами;
+- enum сериализуются строками;
+- string fields сериализуются валидными JSON string values с canonical escaping для кавычек, backslash и control chars; parser принимает standard JSON escapes, включая `\uXXXX`, которые нужны для serializer round-trip;
+- `allowed_time_sources` детерминированно сортируются в canonical order;
+- optional time/skew fields опускаются только для `secure_time_status=unavailable`.
+
+Parse boundary `T03e`:
+- required string field `clock_id` при отсутствии ключа даёт `secure_time.missing_required_time_field`;
+- `clock_id: null` и другие non-string types дают error-level `secure_time.invalid_type`;
+- raw control chars внутри JSON string отклоняются как malformed input с `secure_time.json_malformed`;
+- parse-path не возвращает `ok()==true` с пустым `value` для malformed required field.
+
+Сознательные ограничения `T03e`:
+- нет реального RTC access, NTP/PTP sync и system clock discipline;
+- нет TPM/ZymKey runtime integration и transport binding;
+- нет KDM/show-window runtime binding, decrypt runtime и playback integration;
+- нет runtime audit/logging binding, кроме согласованной tamper/time vocabulary на model уровне.

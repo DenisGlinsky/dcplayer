@@ -1,0 +1,8 @@
+[
+  {
+    "code": "secure_time.invalid_type",
+    "severity": "error",
+    "path": "/clock_id",
+    "message": "clock_id must be a string"
+  }
+]

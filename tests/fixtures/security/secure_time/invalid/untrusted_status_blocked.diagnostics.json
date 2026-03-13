@@ -1,0 +1,8 @@
+[
+  {
+    "code": "secure_time.untrusted_time_source",
+    "severity": "error",
+    "path": "/secure_time_status",
+    "message": "secure_time_status must be trusted for usable time"
+  }
+]

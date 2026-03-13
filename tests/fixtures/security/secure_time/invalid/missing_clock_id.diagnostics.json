@@ -1,0 +1,8 @@
+[
+  {
+    "code": "secure_time.missing_required_time_field",
+    "severity": "error",
+    "path": "/clock_id",
+    "message": "clock_id is required"
+  }
+]
