@@ -1,0 +1,8 @@
+[
+  {
+    "code": "secure_channel.missing_required_field",
+    "severity": "error",
+    "path": "/payload/body/manifest_hash",
+    "message": "Required body field is missing"
+  }
+]

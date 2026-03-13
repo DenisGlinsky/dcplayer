@@ -11,7 +11,7 @@
 
 ## 2. Текущее project snapshot
 
-Сейчас проект находится в состоянии **scaffold baseline + T01a/T01b/T02a/T02b/T02c/T03b готовы; T03a desync в текущем worktree**.
+Сейчас проект находится в состоянии **scaffold baseline + T01a/T01b/T02a/T02b/T02c/T03b/T03c готовы; T03a desync в текущем worktree**.
 
 Подтверждено:
 - репозиторий очищен от `build/`, `__MACOSX`, `.DS_Store` и подобных артефактов;
@@ -39,9 +39,13 @@
 - реализован `secure_channel` contract/model слой без real transport;
 - реализованы machine-readable `SecureChannelContract`, request/response `ProtectedApiEnvelope` и `SecurityModuleContract`;
 - реализованы metadata-level identity checks, trust binding и ACL baseline для `pi_zymkey <-> ubuntu_tpm`;
-- deterministic diagnostics покрывают invalid server/client role, role mismatch, invalid peer identity, missing trust binding, untrusted peer, unauthorized API и response request-id mismatch;
-- `docs/IMPLEMENT.md` синхронизирован с полным публичным `T03b` diagnostic surface, включая duplicate collection codes и baseline invalid ref diagnostics;
-- добавлены valid/invalid secure channel fixtures и branch-focused unit tests;
+- реализованы strict ACL/API semantics поверх baseline envelope-а: API-specific request/response body schemas для `sign`, `unwrap`, `decrypt`, `health`, `identity`;
+- response validation теперь покрывает request/response family matching, status/body combinations и request-id consistency без transport/runtime side effects;
+- response parse/validate split зафиксирован: parse stage принимает syntactically valid response envelope с корректной response family/body schema, а status/body reject остаётся в semantic validation;
+- response validation соблюдает precedence: `invalid_status_body_combination` остаётся первичным кодом и не получает лишний `request_response_api_mismatch` поверх того же дефекта;
+- deterministic diagnostics покрывают invalid server/client role, role mismatch, invalid peer identity, missing trust binding, untrusted peer, unauthorized API, invalid request/response body, missing required field, unexpected field, request/response api mismatch, invalid status/body combination и response request-id mismatch;
+- `docs/IMPLEMENT.md` синхронизирован с публичным `T03b/T03c` diagnostic surface, включая ACL/API body validation и baseline invalid ref diagnostics;
+- добавлены valid/invalid secure channel fixtures для baseline APIs и branch-focused unit tests;
 - добавлены valid/invalid DCP fixtures и unit tests для `assetmap`/`pkl`/`cpl`;
 - добавлены valid/invalid OV/VF fixtures и unit/integration tests для resolver-а;
 - добавлены valid/invalid supplemental fixtures и unit/integration tests для merge layer;
@@ -70,11 +74,12 @@
 - `supplemental` merge layer + `SupplementalMergePolicy`;
 - `PlaybackTimeline` dry-run builder + canonical JSON serialization;
 - spec-level `CertificateStore` / `TrustChain` PKI result-model baseline;
-- `secure_channel` object model, canonical JSON serialization и authority checks;
-- `ProtectedApiEnvelope` request/response validation;
+- `secure_channel` object model, canonical JSON serialization, strict ACL matrix и authority checks;
+- `ProtectedApiEnvelope` request/response validation с API-specific body schemas и family matching;
 - `SecurityModuleContract` baseline для `pi_zymkey`;
 - baseline host contract factory для `spb1`;
 - regression coverage для `secure_channel.duplicate_revocation_status` и `secure_channel.duplicate_supported_api_name`;
+- regression coverage для `secure_channel.missing_required_field`, `secure_channel.unexpected_field`, `secure_channel.invalid_request_body`, `secure_channel.invalid_response_body`, `secure_channel.request_response_api_mismatch` и `secure_channel.invalid_status_body_combination`;
 - backed owner selection для целевого `CPL`;
 - deterministic OV/VF diagnostics и dependency classification;
 - deterministic supplemental diagnostics, policy validation и multi-policy conflict handling;
@@ -111,7 +116,7 @@
 
 ## 4. Evidence baseline
 
-Для веток `T01a`, `T01b`, `T02a`, `T02b`, `T02c` и `T03b` в этом handoff подтверждены следующие команды:
+Для веток `T01a`, `T01b`, `T02a`, `T02b`, `T02c`, `T03b` и `T03c` в этом handoff подтверждены следующие команды:
 
 ```bash
 ./scripts/bootstrap.sh
@@ -148,16 +153,14 @@ Focused branch tests:
 ## 6. Следующая очередь
 
 Первыми готовыми к запуску ветками являются:
-- `T03c` — ACL/API
 - `T05a` — J2K Backend
 - `T06a` — Watermark Model
 - `T07a` — Audio Sync
 
 Рекомендуемый порядок старта:
-1. `T03c`
-2. `T05a`
-3. `T06a`
-4. `T07a`
+1. `T05a`
+2. `T06a`
+3. `T07a`
 
 ## 7. Фаза A — Foundation
 
@@ -178,10 +181,10 @@ Focused branch tests:
 | T02c | DONE | Реализованы dry-run `PlaybackTimeline`, machine-readable JSON dump, deterministic diagnostics, invariant-check для `composition_kind/dependency_kind`, precedence для `invalid_edit_rate` и global mismatch, valid/invalid fixtures и branch-focused unit/integration tests. |
 | T03a | DESYNC | `CertificateStore`/`TrustChain` specs присутствуют и используются `T03b`, но `src/security_api/certs/**` и `tests/unit/security/pki/**` в текущем worktree остаются scaffold-only, поэтому `DONE` здесь не подтверждён. |
 | T03b | DONE | Реализованы secure channel contract, protected request/response envelopes, metadata-level identity/trust checks, ACL baseline, fixtures и branch-focused unit tests. |
+| T03c | DONE | Реализованы strict ACL/API semantics поверх `T03b`: baseline API body schemas, deterministic request/response family validation, invalid status/body handling, valid/invalid fixtures и branch-focused unit tests. |
 | T05a | READY | Decode abstraction можно проектировать на канонических specs и leaf-level CMake scaffold. |
 | T06a | READY | Watermark contract можно фиксировать на текущих companion-specs. |
 | T07a | READY | `PlaybackTimeline` готов; можно стартовать sync-ветку поверх dry-run timeline контракта. |
-| T03c | READY | Базовый protected envelope и ACL semantics уже формализованы в `T03b`; можно уточнять API-level surface поверх текущего контракта. |
 
 ## 9. Остальные ветки
 

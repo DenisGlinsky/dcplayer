@@ -87,6 +87,17 @@ int main() {
     }
 
     {
+        const auto json = read_file(fixture_root / "invalid" / "server_acl_rule.contract.json");
+        const auto parsed = secure_channel::parse_secure_channel_contract(json);
+
+        expect(!parsed.ok(), "Server caller ACL rule fixture must fail");
+        expect(!parsed.value.has_value(), "Server caller ACL rule fixture must not yield a value");
+        expect(secure_channel::diagnostics_to_json(parsed.diagnostics) ==
+                   read_file(fixture_root / "invalid" / "server_acl_rule.diagnostics.json"),
+               "Unexpected server caller ACL diagnostics");
+    }
+
+    {
         const auto json = read_file(fixture_root / "invalid" / "duplicate_revocation_status.contract.json");
         const auto parsed = secure_channel::parse_secure_channel_contract(json);
 

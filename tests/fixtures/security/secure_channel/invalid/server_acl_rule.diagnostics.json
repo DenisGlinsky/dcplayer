@@ -1,0 +1,14 @@
+[
+  {
+    "code": "secure_channel.invalid_acl_binding",
+    "severity": "error",
+    "path": "/acl",
+    "message": "ACL must contain a rule for the client role"
+  },
+  {
+    "code": "secure_channel.invalid_acl_binding",
+    "severity": "error",
+    "path": "/acl[1]/caller_role",
+    "message": "ACL caller_role must match client_role"
+  }
+]

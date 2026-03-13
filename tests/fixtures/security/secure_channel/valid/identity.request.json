@@ -1,6 +1,6 @@
 {
-  "request_id": "11111111-2222-4333-8444-555555555555",
-  "api_name": "sign",
+  "request_id": "55555555-2222-4333-8444-555555555555",
+  "api_name": "identity",
   "caller_role": "ubuntu_tpm",
   "caller_identity": {
     "role": "ubuntu_tpm",
@@ -19,7 +19,7 @@
     "mutual_tls": true,
     "local_role": "pi_zymkey",
     "peer_trust": {
-      "subject_fingerprint": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "subject_fingerprint": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
       "issuer_chain": [
         "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
       ],
@@ -39,12 +39,8 @@
     ]
   },
   "payload": {
-    "payload_type": "sign_request",
-    "schema_ref": "spb1.sign.request.v1",
-    "body": {
-      "key_slot": "server-signing-key-01",
-      "manifest_hash": "sha256:manifest-001",
-      "metadata_summary": "cpl=feature-main;asset_map=ov"
-    }
+    "payload_type": "identity_request",
+    "schema_ref": "spb1.identity.request.v1",
+    "body": {}
   }
 }

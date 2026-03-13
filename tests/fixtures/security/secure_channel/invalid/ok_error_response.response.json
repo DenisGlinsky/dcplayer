@@ -1,0 +1,13 @@
+{
+  "request_id": "11111111-2222-4333-8444-555555555555",
+  "status": "ok",
+  "diagnostics": [],
+  "payload": {
+    "payload_type": "error_response",
+    "schema_ref": "spb1.error.response.v1",
+    "body": {
+      "error_code": "secure_channel.unauthorized_api",
+      "error_summary": "caller_role denied by acl"
+    }
+  }
+}
