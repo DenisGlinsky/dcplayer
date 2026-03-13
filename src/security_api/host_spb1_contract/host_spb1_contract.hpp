@@ -74,15 +74,21 @@ namespace dcplayer::security_api::host_spb1_contract {
     };
 }
 
-[[nodiscard]] inline secure_channel::PayloadContract make_sign_payload(std::string digest_ref, std::string key_slot) {
+[[nodiscard]] inline secure_channel::PayloadContract make_sign_payload(std::string manifest_hash,
+                                                                       std::string metadata_summary,
+                                                                       std::string key_slot = {}) {
+    std::map<std::string, std::string> body{
+        {"manifest_hash", std::move(manifest_hash)},
+        {"metadata_summary", std::move(metadata_summary)},
+    };
+    if (!key_slot.empty()) {
+        body.insert_or_assign("key_slot", std::move(key_slot));
+    }
+
     return secure_channel::PayloadContract{
         .payload_type = "sign_request",
         .schema_ref = "spb1.sign.request.v1",
-        .body =
-            std::map<std::string, std::string>{
-                {"digest_ref", std::move(digest_ref)},
-                {"key_slot", std::move(key_slot)},
-            },
+        .body = std::move(body),
     };
 }
 

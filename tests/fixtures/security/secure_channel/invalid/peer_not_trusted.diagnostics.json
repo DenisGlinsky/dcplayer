@@ -1,0 +1,8 @@
+[
+  {
+    "code": "secure_channel.peer_not_trusted",
+    "severity": "error",
+    "path": "/auth_context/peer_trust",
+    "message": "peer_trust does not satisfy trust_requirements"
+  }
+]

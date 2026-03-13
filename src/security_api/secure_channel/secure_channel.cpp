@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cctype>
+#include <initializer_list>
 #include <optional>
 #include <sstream>
 #include <string>
@@ -1217,11 +1218,19 @@ template <typename Enum>
 
     std::vector<AclRule> rules;
     rules.reserve(field->array_values.size());
+    std::map<PeerRole, std::size_t> first_seen_roles;
     for (std::size_t index = 0U; index < field->array_values.size(); ++index) {
         const auto parsed = parse_acl_rule(field->array_values[index],
                                            std::string{path} + "[" + std::to_string(index + 1U) + "]",
                                            diagnostics);
         if (parsed.has_value()) {
+            if (!first_seen_roles.emplace(parsed->caller_role, index).second) {
+                add_diagnostic(diagnostics,
+                               "secure_channel.invalid_acl_binding",
+                               DiagnosticSeverity::error,
+                               std::string{path} + "[" + std::to_string(index + 1U) + "]/caller_role",
+                               "ACL caller_role duplicates an earlier rule");
+            }
             rules.push_back(*parsed);
         }
     }
@@ -1241,36 +1250,462 @@ template <typename Enum>
     return rules;
 }
 
-[[nodiscard]] const char* expected_request_payload_type(ApiName api_name) noexcept {
+enum class PayloadFamily {
+    sign_request,
+    unwrap_request,
+    decrypt_request,
+    health_request,
+    identity_request,
+    sign_response,
+    unwrap_response,
+    decrypt_response,
+    health_response,
+    identity_response,
+    error_response,
+};
+
+[[nodiscard]] PayloadFamily expected_request_payload_family(ApiName api_name) noexcept {
     switch (api_name) {
         case ApiName::sign:
-            return "sign_request";
+            return PayloadFamily::sign_request;
         case ApiName::unwrap:
-            return "unwrap_request";
+            return PayloadFamily::unwrap_request;
         case ApiName::decrypt:
-            return "decrypt_request";
+            return PayloadFamily::decrypt_request;
         case ApiName::health:
-            return "health_request";
+            return PayloadFamily::health_request;
         case ApiName::identity:
-            return "identity_request";
+            return PayloadFamily::identity_request;
     }
-    return "health_request";
+    return PayloadFamily::health_request;
 }
 
-[[nodiscard]] const char* expected_response_payload_type(ApiName api_name) noexcept {
-    switch (api_name) {
-        case ApiName::sign:
-            return "sign_response";
-        case ApiName::unwrap:
-            return "unwrap_response";
-        case ApiName::decrypt:
-            return "decrypt_response";
-        case ApiName::health:
-            return "health_response";
-        case ApiName::identity:
-            return "identity_response";
+[[nodiscard]] const char* schema_ref_for(PayloadFamily family) noexcept {
+    switch (family) {
+        case PayloadFamily::sign_request:
+            return "spb1.sign.request.v1";
+        case PayloadFamily::unwrap_request:
+            return "spb1.unwrap.request.v1";
+        case PayloadFamily::decrypt_request:
+            return "spb1.decrypt.request.v1";
+        case PayloadFamily::health_request:
+            return "spb1.health.request.v1";
+        case PayloadFamily::identity_request:
+            return "spb1.identity.request.v1";
+        case PayloadFamily::sign_response:
+            return "spb1.sign.response.v1";
+        case PayloadFamily::unwrap_response:
+            return "spb1.unwrap.response.v1";
+        case PayloadFamily::decrypt_response:
+            return "spb1.decrypt.response.v1";
+        case PayloadFamily::health_response:
+            return "spb1.health.response.v1";
+        case PayloadFamily::identity_response:
+            return "spb1.identity.response.v1";
+        case PayloadFamily::error_response:
+            return "spb1.error.response.v1";
     }
-    return "health_response";
+    return "spb1.error.response.v1";
+}
+
+[[nodiscard]] std::optional<PayloadFamily> parse_payload_family(std::string_view payload_type) noexcept {
+    if (payload_type == "sign_request") {
+        return PayloadFamily::sign_request;
+    }
+    if (payload_type == "unwrap_request") {
+        return PayloadFamily::unwrap_request;
+    }
+    if (payload_type == "decrypt_request") {
+        return PayloadFamily::decrypt_request;
+    }
+    if (payload_type == "health_request") {
+        return PayloadFamily::health_request;
+    }
+    if (payload_type == "identity_request") {
+        return PayloadFamily::identity_request;
+    }
+    if (payload_type == "sign_response") {
+        return PayloadFamily::sign_response;
+    }
+    if (payload_type == "unwrap_response") {
+        return PayloadFamily::unwrap_response;
+    }
+    if (payload_type == "decrypt_response") {
+        return PayloadFamily::decrypt_response;
+    }
+    if (payload_type == "health_response") {
+        return PayloadFamily::health_response;
+    }
+    if (payload_type == "identity_response") {
+        return PayloadFamily::identity_response;
+    }
+    if (payload_type == "error_response") {
+        return PayloadFamily::error_response;
+    }
+    return std::nullopt;
+}
+
+[[nodiscard]] bool is_request_payload_family(PayloadFamily family) noexcept {
+    switch (family) {
+        case PayloadFamily::sign_request:
+        case PayloadFamily::unwrap_request:
+        case PayloadFamily::decrypt_request:
+        case PayloadFamily::health_request:
+        case PayloadFamily::identity_request:
+            return true;
+        case PayloadFamily::sign_response:
+        case PayloadFamily::unwrap_response:
+        case PayloadFamily::decrypt_response:
+        case PayloadFamily::health_response:
+        case PayloadFamily::identity_response:
+        case PayloadFamily::error_response:
+            return false;
+    }
+    return false;
+}
+
+[[nodiscard]] std::optional<ApiName> api_name_for_payload_family(PayloadFamily family) noexcept {
+    switch (family) {
+        case PayloadFamily::sign_request:
+        case PayloadFamily::sign_response:
+            return ApiName::sign;
+        case PayloadFamily::unwrap_request:
+        case PayloadFamily::unwrap_response:
+            return ApiName::unwrap;
+        case PayloadFamily::decrypt_request:
+        case PayloadFamily::decrypt_response:
+            return ApiName::decrypt;
+        case PayloadFamily::health_request:
+        case PayloadFamily::health_response:
+            return ApiName::health;
+        case PayloadFamily::identity_request:
+        case PayloadFamily::identity_response:
+            return ApiName::identity;
+        case PayloadFamily::error_response:
+            return std::nullopt;
+    }
+    return std::nullopt;
+}
+
+[[nodiscard]] const char* expected_request_schema_ref(ApiName api_name) noexcept {
+    return schema_ref_for(expected_request_payload_family(api_name));
+}
+
+[[nodiscard]] std::string* find_body_field(PayloadContract& payload, std::string_view field_name) {
+    auto it = payload.body.find(std::string{field_name});
+    if (it == payload.body.end()) {
+        return nullptr;
+    }
+    return &it->second;
+}
+
+[[nodiscard]] bool body_field_present(const PayloadContract& payload, std::string_view field_name) {
+    return payload.body.find(std::string{field_name}) != payload.body.end();
+}
+
+void add_missing_required_field(std::vector<Diagnostic>& diagnostics,
+                                std::string_view body_path,
+                                std::string_view field_name) {
+    add_diagnostic(diagnostics,
+                   "secure_channel.missing_required_field",
+                   DiagnosticSeverity::error,
+                   std::string{body_path} + "/" + std::string{field_name},
+                   "Required body field is missing");
+}
+
+void add_unexpected_field(std::vector<Diagnostic>& diagnostics, std::string_view body_path, std::string_view field_name) {
+    add_diagnostic(diagnostics,
+                   "secure_channel.unexpected_field",
+                   DiagnosticSeverity::error,
+                   std::string{body_path} + "/" + std::string{field_name},
+                   "Field is not allowed for payload family");
+}
+
+void add_invalid_body_field(std::vector<Diagnostic>& diagnostics,
+                            const char* code,
+                            std::string_view body_path,
+                            std::string_view field_name,
+                            std::string_view message) {
+    add_diagnostic(diagnostics,
+                   code,
+                   DiagnosticSeverity::error,
+                   std::string{body_path} + "/" + std::string{field_name},
+                   std::string{message});
+}
+
+void validate_body_shape(PayloadContract& payload,
+                         std::string_view body_path,
+                         std::initializer_list<std::string_view> required_fields,
+                         std::initializer_list<std::string_view> optional_fields,
+                         std::vector<Diagnostic>& diagnostics) {
+    for (const auto field_name : required_fields) {
+        if (!body_field_present(payload, field_name)) {
+            add_missing_required_field(diagnostics, body_path, field_name);
+        }
+    }
+
+    const auto is_allowed_field = [&](std::string_view field_name) {
+        return std::find(required_fields.begin(), required_fields.end(), field_name) != required_fields.end() ||
+               std::find(optional_fields.begin(), optional_fields.end(), field_name) != optional_fields.end();
+    };
+
+    for (const auto& [field_name, field_value] : payload.body) {
+        static_cast<void>(field_value);
+        if (!is_allowed_field(field_name)) {
+            add_unexpected_field(diagnostics, body_path, field_name);
+        }
+    }
+}
+
+void validate_non_empty_body_field(PayloadContract& payload,
+                                   std::string_view body_path,
+                                   std::string_view field_name,
+                                   const char* invalid_code,
+                                   std::vector<Diagnostic>& diagnostics,
+                                   bool normalize_lower = false) {
+    auto* value = find_body_field(payload, field_name);
+    if (value == nullptr) {
+        return;
+    }
+
+    if (normalize_lower) {
+        *value = lower_copy(*value);
+    }
+
+    if (value->empty()) {
+        add_invalid_body_field(diagnostics, invalid_code, body_path, field_name, "Body field must not be empty");
+    }
+}
+
+void validate_hex_body_field(PayloadContract& payload,
+                             std::string_view body_path,
+                             std::string_view field_name,
+                             const char* invalid_code,
+                             std::vector<Diagnostic>& diagnostics) {
+    auto* value = find_body_field(payload, field_name);
+    if (value == nullptr) {
+        return;
+    }
+
+    *value = lower_copy(*value);
+    if (value->empty()) {
+        add_invalid_body_field(diagnostics, invalid_code, body_path, field_name, "Body field must not be empty");
+        return;
+    }
+
+    if (!is_hex_string(*value)) {
+        add_invalid_body_field(diagnostics, invalid_code, body_path, field_name, "Body field must be a lowercase hex string");
+    }
+}
+
+void validate_role_body_field(PayloadContract& payload,
+                              std::string_view body_path,
+                              std::string_view field_name,
+                              PeerRole expected_role,
+                              const char* invalid_code,
+                              std::vector<Diagnostic>& diagnostics) {
+    auto* value = find_body_field(payload, field_name);
+    if (value == nullptr) {
+        return;
+    }
+
+    *value = lower_copy(*value);
+    if (value->empty()) {
+        add_invalid_body_field(diagnostics, invalid_code, body_path, field_name, "Body field must not be empty");
+        return;
+    }
+
+    const auto parsed = parse_peer_role_string(*value);
+    if (!parsed.has_value()) {
+        add_invalid_body_field(diagnostics, invalid_code, body_path, field_name, "Body field must be a supported peer role");
+        return;
+    }
+
+    if (*parsed != expected_role) {
+        add_invalid_body_field(diagnostics, invalid_code, body_path, field_name, "Body field must match the baseline module role");
+    }
+}
+
+void validate_health_status_field(PayloadContract& payload,
+                                  std::string_view body_path,
+                                  std::string_view field_name,
+                                  const char* invalid_code,
+                                  std::vector<Diagnostic>& diagnostics) {
+    auto* value = find_body_field(payload, field_name);
+    if (value == nullptr) {
+        return;
+    }
+
+    *value = lower_copy(*value);
+    if (value->empty()) {
+        add_invalid_body_field(diagnostics, invalid_code, body_path, field_name, "Body field must not be empty");
+        return;
+    }
+
+    if (*value != "ok" && *value != "degraded" && *value != "maintenance") {
+        add_invalid_body_field(diagnostics, invalid_code, body_path, field_name, "Body field must use a supported health status");
+    }
+}
+
+void validate_payload_body(PayloadFamily family,
+                           PayloadContract& payload,
+                           std::string_view path,
+                           std::vector<Diagnostic>& diagnostics) {
+    const std::string body_path = std::string{path} + "/body";
+
+    switch (family) {
+        case PayloadFamily::sign_request:
+            validate_body_shape(payload, body_path, {"manifest_hash", "metadata_summary"}, {"key_slot"}, diagnostics);
+            validate_non_empty_body_field(payload, body_path, "manifest_hash", "secure_channel.invalid_request_body", diagnostics, true);
+            validate_non_empty_body_field(payload, body_path, "metadata_summary", "secure_channel.invalid_request_body", diagnostics);
+            validate_non_empty_body_field(payload, body_path, "key_slot", "secure_channel.invalid_request_body", diagnostics);
+            return;
+        case PayloadFamily::unwrap_request:
+            validate_body_shape(payload, body_path, {"wrapped_key_ref", "wrapping_key_slot"}, {"unwrap_context"}, diagnostics);
+            validate_non_empty_body_field(payload, body_path, "wrapped_key_ref", "secure_channel.invalid_request_body", diagnostics);
+            validate_non_empty_body_field(payload, body_path, "wrapping_key_slot", "secure_channel.invalid_request_body", diagnostics);
+            validate_non_empty_body_field(payload, body_path, "unwrap_context", "secure_channel.invalid_request_body", diagnostics);
+            return;
+        case PayloadFamily::decrypt_request:
+            validate_body_shape(payload, body_path, {"ciphertext_ref", "context_summary"}, {"output_handle"}, diagnostics);
+            validate_non_empty_body_field(payload, body_path, "ciphertext_ref", "secure_channel.invalid_request_body", diagnostics);
+            validate_non_empty_body_field(payload, body_path, "context_summary", "secure_channel.invalid_request_body", diagnostics);
+            validate_non_empty_body_field(payload, body_path, "output_handle", "secure_channel.invalid_request_body", diagnostics);
+            return;
+        case PayloadFamily::health_request:
+        case PayloadFamily::identity_request:
+            validate_body_shape(payload, body_path, {}, {}, diagnostics);
+            return;
+        case PayloadFamily::sign_response:
+            validate_body_shape(payload, body_path, {"signature", "pubkey"}, {"key_fingerprint"}, diagnostics);
+            validate_non_empty_body_field(payload, body_path, "signature", "secure_channel.invalid_response_body", diagnostics);
+            validate_non_empty_body_field(payload, body_path, "pubkey", "secure_channel.invalid_response_body", diagnostics);
+            validate_hex_body_field(payload, body_path, "key_fingerprint", "secure_channel.invalid_response_body", diagnostics);
+            return;
+        case PayloadFamily::unwrap_response:
+            validate_body_shape(payload, body_path, {"key_handle"}, {"unwrap_receipt"}, diagnostics);
+            validate_non_empty_body_field(payload, body_path, "key_handle", "secure_channel.invalid_response_body", diagnostics);
+            validate_non_empty_body_field(payload, body_path, "unwrap_receipt", "secure_channel.invalid_response_body", diagnostics);
+            return;
+        case PayloadFamily::decrypt_response:
+            validate_body_shape(payload, body_path, {"result_handle"}, {"operation_note"}, diagnostics);
+            validate_non_empty_body_field(payload, body_path, "result_handle", "secure_channel.invalid_response_body", diagnostics);
+            validate_non_empty_body_field(payload, body_path, "operation_note", "secure_channel.invalid_response_body", diagnostics);
+            return;
+        case PayloadFamily::health_response:
+            validate_body_shape(payload, body_path, {"module_status"}, {"status_summary"}, diagnostics);
+            validate_health_status_field(payload, body_path, "module_status", "secure_channel.invalid_response_body", diagnostics);
+            validate_non_empty_body_field(payload, body_path, "status_summary", "secure_channel.invalid_response_body", diagnostics);
+            return;
+        case PayloadFamily::identity_response:
+            validate_body_shape(payload,
+                                body_path,
+                                {"module_id", "module_role", "certificate_fingerprint"},
+                                {"subject_dn"},
+                                diagnostics);
+            validate_non_empty_body_field(payload, body_path, "module_id", "secure_channel.invalid_response_body", diagnostics);
+            validate_role_body_field(payload,
+                                     body_path,
+                                     "module_role",
+                                     PeerRole::pi_zymkey,
+                                     "secure_channel.invalid_response_body",
+                                     diagnostics);
+            validate_hex_body_field(payload,
+                                    body_path,
+                                    "certificate_fingerprint",
+                                    "secure_channel.invalid_response_body",
+                                    diagnostics);
+            validate_non_empty_body_field(payload, body_path, "subject_dn", "secure_channel.invalid_response_body", diagnostics);
+            return;
+        case PayloadFamily::error_response:
+            validate_body_shape(payload, body_path, {"error_code", "error_summary"}, {}, diagnostics);
+            validate_non_empty_body_field(payload, body_path, "error_code", "secure_channel.invalid_response_body", diagnostics, true);
+            validate_non_empty_body_field(payload, body_path, "error_summary", "secure_channel.invalid_response_body", diagnostics);
+            return;
+    }
+}
+
+[[nodiscard]] std::optional<PayloadFamily> validate_request_payload_contract(ApiName api_name,
+                                                                             PayloadContract& payload,
+                                                                             std::string_view path,
+                                                                             std::vector<Diagnostic>& diagnostics) {
+    const auto expected_family = expected_request_payload_family(api_name);
+    const auto actual_family = parse_payload_family(payload.payload_type);
+    if (!actual_family.has_value() || !is_request_payload_family(*actual_family)) {
+        add_diagnostic(diagnostics,
+                       "secure_channel.invalid_payload_contract",
+                       DiagnosticSeverity::error,
+                       std::string{path} + "/payload_type",
+                       "payload_type must reference a request payload family");
+        return std::nullopt;
+    }
+
+    if (*actual_family != expected_family) {
+        add_diagnostic(diagnostics,
+                       "secure_channel.invalid_payload_contract",
+                       DiagnosticSeverity::error,
+                       std::string{path} + "/payload_type",
+                       "payload_type must match api_name");
+        return std::nullopt;
+    }
+
+    if (payload.schema_ref != expected_request_schema_ref(api_name)) {
+        add_diagnostic(diagnostics,
+                       "secure_channel.invalid_payload_contract",
+                       DiagnosticSeverity::error,
+                       std::string{path} + "/schema_ref",
+                       "schema_ref must match payload_type");
+        return std::nullopt;
+    }
+
+    validate_payload_body(*actual_family, payload, path, diagnostics);
+    return actual_family;
+}
+
+[[nodiscard]] std::optional<PayloadFamily> validate_response_payload_contract(PayloadContract& payload,
+                                                                              std::optional<EnvelopeStatus> status,
+                                                                              bool enforce_status_body_pair,
+                                                                              std::string_view path,
+                                                                              std::vector<Diagnostic>& diagnostics) {
+    const auto actual_family = parse_payload_family(payload.payload_type);
+    if (!actual_family.has_value() || is_request_payload_family(*actual_family)) {
+        add_diagnostic(diagnostics,
+                       "secure_channel.invalid_payload_contract",
+                       DiagnosticSeverity::error,
+                       std::string{path} + "/payload_type",
+                       "payload_type must reference a response payload family");
+        return std::nullopt;
+    }
+
+    if (payload.schema_ref != schema_ref_for(*actual_family)) {
+        add_diagnostic(diagnostics,
+                       "secure_channel.invalid_payload_contract",
+                       DiagnosticSeverity::error,
+                       std::string{path} + "/schema_ref",
+                       "schema_ref must match payload_type");
+        return std::nullopt;
+    }
+
+    if (enforce_status_body_pair) {
+        if (status.has_value() && *status == EnvelopeStatus::ok && *actual_family == PayloadFamily::error_response) {
+            add_diagnostic(diagnostics,
+                           "secure_channel.invalid_status_body_combination",
+                           DiagnosticSeverity::error,
+                           std::string{path} + "/payload_type",
+                           "status=ok must use an api-specific response family");
+        }
+
+        if (status.has_value() && *status != EnvelopeStatus::ok && *actual_family != PayloadFamily::error_response) {
+            add_diagnostic(diagnostics,
+                           "secure_channel.invalid_status_body_combination",
+                           DiagnosticSeverity::error,
+                           std::string{path} + "/payload_type",
+                           "denied or error status must use error_response");
+        }
+    }
+
+    validate_payload_body(*actual_family, payload, path, diagnostics);
+    return actual_family;
 }
 
 void normalize_peer_identity(PeerIdentity& identity) {
@@ -1401,6 +1836,16 @@ template <typename T>
                            "/acl",
                            "ACL must contain a rule for the client role");
         }
+
+        for (std::size_t index = 0U; index < acl->size(); ++index) {
+            if ((*acl)[index].caller_role != *client_role) {
+                add_diagnostic(diagnostics,
+                               "secure_channel.invalid_acl_binding",
+                               DiagnosticSeverity::error,
+                               "/acl[" + std::to_string(index + 1U) + "]/caller_role",
+                               "ACL caller_role must match client_role");
+            }
+        }
     }
 
     if (!channel_id.has_value() || !server_role.has_value() || !client_role.has_value() || !tls_profile.has_value() ||
@@ -1514,12 +1959,8 @@ template <typename T>
                        "peer_trust.subject_fingerprint must bind to caller_identity.certificate_fingerprint");
     }
 
-    if (payload.has_value() && api_name.has_value() && payload->payload_type != expected_request_payload_type(*api_name)) {
-        add_diagnostic(diagnostics,
-                       "secure_channel.invalid_payload_contract",
-                       DiagnosticSeverity::error,
-                       "/payload/payload_type",
-                       "payload_type must match api_name");
+    if (payload.has_value() && api_name.has_value()) {
+        static_cast<void>(validate_request_payload_contract(*api_name, *payload, "/payload", diagnostics));
     }
 
     if (!request_id.has_value() || !api_name.has_value() || !caller_role.has_value() || !caller_identity.has_value() ||
@@ -1655,6 +2096,10 @@ template <typename T>
                        DiagnosticSeverity::error,
                        "/diagnostics",
                        "denied or error response must carry diagnostics");
+    }
+
+    if (payload.has_value()) {
+        static_cast<void>(validate_response_payload_contract(*payload, status, false, "/payload", diagnostics));
     }
 
     if (!request_id.has_value() || !status.has_value() || !payload.has_value() || !is_uuid_like(request_id.value_or(""))) {
@@ -2106,7 +2551,8 @@ ParseResult<SecurityModuleContract> parse_security_module_contract(std::string_v
 CheckResult authorize_request(const SecureChannelContract& contract, const ProtectedRequestEnvelope& request) {
     std::vector<Diagnostic> diagnostics;
 
-    if (request.caller_role != contract.client_role) {
+    const bool caller_role_matches_contract = request.caller_role == contract.client_role;
+    if (!caller_role_matches_contract) {
         add_diagnostic(diagnostics,
                        "secure_channel.role_mismatch",
                        DiagnosticSeverity::error,
@@ -2138,9 +2584,12 @@ CheckResult authorize_request(const SecureChannelContract& contract, const Prote
                        "mutual_tls must be true");
     }
 
-    check_identity_binding(contract.client_identity, request.caller_identity, "/caller_identity", diagnostics);
+    if (caller_role_matches_contract) {
+        check_identity_binding(contract.client_identity, request.caller_identity, "/caller_identity", diagnostics);
+    }
 
-    if (request.caller_identity.certificate_fingerprint != request.auth_context.peer_trust.subject_fingerprint) {
+    if (caller_role_matches_contract &&
+        request.caller_identity.certificate_fingerprint != request.auth_context.peer_trust.subject_fingerprint) {
         add_diagnostic(diagnostics,
                        "secure_channel.missing_trust_binding",
                        DiagnosticSeverity::error,
@@ -2148,39 +2597,43 @@ CheckResult authorize_request(const SecureChannelContract& contract, const Prote
                        "peer_trust.subject_fingerprint must bind to caller_identity.certificate_fingerprint");
     }
 
-    if (request.auth_context.peer_trust.decision != contract.trust_requirements.required_decision ||
-        request.auth_context.peer_trust.decision_reason != contract.trust_requirements.required_decision_reason ||
-        !contains(contract.trust_requirements.accepted_revocation_statuses, request.auth_context.peer_trust.revocation_status)) {
-        add_diagnostic(diagnostics,
-                       "secure_channel.peer_not_trusted",
-                       DiagnosticSeverity::error,
-                       "/auth_context/peer_trust",
-                       "peer_trust does not satisfy trust_requirements");
-    }
-
-    for (const auto& required_source : contract.trust_requirements.required_checked_sources) {
-        if (!contains(request.auth_context.peer_trust.checked_sources, required_source)) {
+    if (caller_role_matches_contract) {
+        if (request.auth_context.peer_trust.decision != contract.trust_requirements.required_decision ||
+            request.auth_context.peer_trust.decision_reason != contract.trust_requirements.required_decision_reason ||
+            !contains(contract.trust_requirements.accepted_revocation_statuses, request.auth_context.peer_trust.revocation_status)) {
             add_diagnostic(diagnostics,
-                           "secure_channel.missing_trust_binding",
+                           "secure_channel.peer_not_trusted",
                            DiagnosticSeverity::error,
-                           "/auth_context/peer_trust/checked_sources",
-                           "peer_trust.checked_sources must include every required trust source");
-            break;
+                           "/auth_context/peer_trust",
+                           "peer_trust does not satisfy trust_requirements");
+        }
+
+        for (const auto& required_source : contract.trust_requirements.required_checked_sources) {
+            if (!contains(request.auth_context.peer_trust.checked_sources, required_source)) {
+                add_diagnostic(diagnostics,
+                               "secure_channel.missing_trust_binding",
+                               DiagnosticSeverity::error,
+                               "/auth_context/peer_trust/checked_sources",
+                               "peer_trust.checked_sources must include every required trust source");
+                break;
+            }
         }
     }
 
     bool acl_match = false;
     bool api_allowed = false;
-    for (const auto& rule : contract.acl) {
-        if (rule.caller_role != request.caller_role) {
-            continue;
+    if (caller_role_matches_contract) {
+        for (const auto& rule : contract.acl) {
+            if (rule.caller_role != request.caller_role) {
+                continue;
+            }
+            acl_match = true;
+            api_allowed = contains(rule.allowed_api_names, request.api_name);
+            break;
         }
-        acl_match = true;
-        api_allowed = contains(rule.allowed_api_names, request.api_name);
-        break;
     }
 
-    if (!acl_match || !api_allowed) {
+    if (caller_role_matches_contract && (!acl_match || !api_allowed)) {
         add_diagnostic(diagnostics,
                        "secure_channel.unauthorized_api",
                        DiagnosticSeverity::error,
@@ -2188,13 +2641,8 @@ CheckResult authorize_request(const SecureChannelContract& contract, const Prote
                        "caller_role is not authorized for api_name");
     }
 
-    if (request.payload.payload_type != expected_request_payload_type(request.api_name)) {
-        add_diagnostic(diagnostics,
-                       "secure_channel.invalid_payload_contract",
-                       DiagnosticSeverity::error,
-                       "/payload/payload_type",
-                       "payload_type must match api_name");
-    }
+    auto payload = request.payload;
+    static_cast<void>(validate_request_payload_contract(request.api_name, payload, "/payload", diagnostics));
 
     sort_diagnostics(diagnostics);
     const auto status = validation_status_for(diagnostics);
@@ -2225,14 +2673,20 @@ CheckResult validate_response(const SecureChannelContract& contract,
                        "response.request_id must match request.request_id");
     }
 
-    const std::string expected_payload_type =
-        response.status == EnvelopeStatus::ok ? expected_response_payload_type(request.api_name) : "error_response";
-    if (response.payload.payload_type != expected_payload_type) {
-        add_diagnostic(diagnostics,
-                       "secure_channel.invalid_payload_contract",
-                       DiagnosticSeverity::error,
-                       "/payload/payload_type",
-                       "response payload_type does not match request api/status");
+    auto payload = response.payload;
+    const auto response_family =
+        validate_response_payload_contract(payload, response.status, true, "/payload", diagnostics);
+
+    if (response_family.has_value() && response.status == EnvelopeStatus::ok &&
+        *response_family != PayloadFamily::error_response) {
+        const auto response_api_name = api_name_for_payload_family(*response_family);
+        if (!response_api_name.has_value() || *response_api_name != request.api_name) {
+            add_diagnostic(diagnostics,
+                           "secure_channel.request_response_api_mismatch",
+                           DiagnosticSeverity::error,
+                           "/payload/payload_type",
+                           "response payload family must match request.api_name");
+        }
     }
 
     if (response.status == EnvelopeStatus::ok && !response.diagnostics.empty()) {

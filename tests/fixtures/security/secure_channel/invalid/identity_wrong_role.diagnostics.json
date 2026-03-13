@@ -1,0 +1,8 @@
+[
+  {
+    "code": "secure_channel.invalid_response_body",
+    "severity": "error",
+    "path": "/payload/body/module_role",
+    "message": "Body field must match the baseline module role"
+  }
+]

@@ -1,0 +1,8 @@
+[
+  {
+    "code": "secure_channel.request_response_api_mismatch",
+    "severity": "error",
+    "path": "/payload/payload_type",
+    "message": "response payload family must match request.api_name"
+  }
+]

@@ -1,0 +1,13 @@
+{
+  "request_id": "44444444-2222-4333-8444-555555555555",
+  "status": "ok",
+  "diagnostics": [],
+  "payload": {
+    "payload_type": "health_response",
+    "schema_ref": "spb1.health.response.v1",
+    "body": {
+      "module_status": "ok",
+      "status_summary": "baseline-ready"
+    }
+  }
+}

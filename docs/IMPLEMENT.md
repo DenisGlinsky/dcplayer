@@ -336,3 +336,71 @@
 - нет socket/HTTP/gRPC transport;
 - нет TPM/ZymKey device integration;
 - нет secure clock, security logs, KDM и runtime playback logic.
+
+## 15. T03c ACL/API baseline
+
+Для `T03c` тот же `src/security_api/secure_channel` усиливается поверх `T03b` без смены trust boundary и без transport/runtime кода.
+
+Что добавлено в `T03c`:
+- strict ACL matrix на model-level:
+  - `caller_role=ubuntu_tpm` остаётся единственным допустимым request-side caller;
+  - `pi_zymkey` как caller для protected request envelope-а детерминированно отклоняется;
+  - `acl` не допускает duplicate rules для одного `caller_role` и не может описывать server-side caller;
+- API-specific payload contracts:
+  - `sign_request` / `sign_response`
+  - `unwrap_request` / `unwrap_response`
+  - `decrypt_request` / `decrypt_response`
+  - `health_request` / `health_response`
+  - `identity_request` / `identity_response`
+  - `error_response` для `status=denied|error`;
+- body validation больше не принимает generic string-map без family-level schema rules.
+
+Request body rules `T03c`:
+- `sign_request` требует `manifest_hash` и `metadata_summary`, допускает optional `key_slot`;
+- `unwrap_request` требует `wrapped_key_ref` и `wrapping_key_slot`, допускает optional `unwrap_context`;
+- `decrypt_request` требует `ciphertext_ref` и `context_summary`, допускает optional `output_handle`;
+- `health_request` и `identity_request` требуют пустой `body`.
+
+Response body rules `T03c`:
+- `sign_response` требует `signature` и `pubkey`, допускает optional `key_fingerprint`;
+- `unwrap_response` требует `key_handle`, допускает optional `unwrap_receipt`;
+- `decrypt_response` требует `result_handle`, допускает optional `operation_note`;
+- `health_response` требует `module_status`, допускает optional `status_summary`;
+- `identity_response` требует `module_id`, `module_role`, `certificate_fingerprint`, допускает optional `subject_dn`;
+- `error_response` требует `error_code` и `error_summary`.
+
+Response semantics `T03c`:
+- `payload_type + schema_ref` валидируются как одна family;
+- parse stage для response envelope проверяет только response-family contract и body schema;
+- `status=ok` допускает только API-specific `*_response` на semantic validation stage;
+- `status=denied|error` допускает только `error_response` на semantic validation stage;
+- `response` обязан соответствовать `request.api_name` по payload family;
+- `response.request_id` обязан совпадать с `request.request_id`.
+
+Diagnostic precedence `T03c`:
+- если `status/body` pair уже невалиден, первичный дефект фиксируется как
+  `secure_channel.invalid_status_body_combination`;
+- поверх такого первичного дефекта не добавляется вторичный
+  `secure_channel.request_response_api_mismatch`;
+- `secure_channel.request_response_api_mismatch` сохраняется только для cases, где response family сама по себе валидна,
+  но относится к другому `api_name`, чем request.
+
+Canonical normalization `T03c`:
+- body-поля сериализуются как отсортированный string-map;
+- `manifest_hash`, `key_fingerprint`, `certificate_fingerprint`, `error_code`, `module_role`, `module_status`
+  нормализуются в lower-case;
+- `module_role` в `identity_response` фиксирован как `pi_zymkey`;
+- `module_status` ограничен baseline enum `ok | degraded | maintenance`.
+
+Публичный diagnostic surface, добавленный в `T03c`:
+- `secure_channel.missing_required_field`
+- `secure_channel.unexpected_field`
+- `secure_channel.invalid_request_body`
+- `secure_channel.invalid_response_body`
+- `secure_channel.request_response_api_mismatch`
+- `secure_channel.invalid_status_body_combination`
+
+Сознательные ограничения `T03c`:
+- нет живого TLS handshake, socket/HTTP/gRPC transport и device I/O;
+- `unwrap` и `decrypt` остаются placeholder-level API contracts и не означают runtime crypto execution;
+- secure clock, security logs, KDM, decrypt runtime, GPU и playback не входят в эту ветку.

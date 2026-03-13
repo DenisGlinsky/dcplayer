@@ -1,0 +1,20 @@
+{
+  "request_id": "11111111-2222-4333-8444-555555555555",
+  "status": "denied",
+  "diagnostics": [
+    {
+      "code": "secure_channel.unauthorized_api",
+      "severity": "error",
+      "path": "/api_name",
+      "message": "caller_role is not authorized for api_name"
+    }
+  ],
+  "payload": {
+    "payload_type": "error_response",
+    "schema_ref": "spb1.error.response.v1",
+    "body": {
+      "error_code": "secure_channel.unauthorized_api",
+      "error_summary": "caller_role denied by acl"
+    }
+  }
+}

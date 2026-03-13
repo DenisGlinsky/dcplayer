@@ -6,7 +6,9 @@
     "payload_type": "sign_response",
     "schema_ref": "spb1.sign.response.v1",
     "body": {
-      "signature_ref": "sig:spb1:sample-001"
+      "key_fingerprint": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "pubkey": "pubkey:spb1:server-signing-01",
+      "signature": "sig:spb1:sample-001"
     }
   }
 }

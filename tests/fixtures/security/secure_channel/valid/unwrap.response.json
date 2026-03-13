@@ -1,0 +1,13 @@
+{
+  "request_id": "22222222-2222-4333-8444-555555555555",
+  "status": "ok",
+  "diagnostics": [],
+  "payload": {
+    "payload_type": "unwrap_response",
+    "schema_ref": "spb1.unwrap.response.v1",
+    "body": {
+      "key_handle": "key-handle:sample-001",
+      "unwrap_receipt": "unwrap:receipt-001"
+    }
+  }
+}

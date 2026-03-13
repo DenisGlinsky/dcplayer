@@ -1,0 +1,8 @@
+[
+  {
+    "code": "secure_channel.invalid_request_body",
+    "severity": "error",
+    "path": "/payload/body/metadata_summary",
+    "message": "Body field must not be empty"
+  }
+]

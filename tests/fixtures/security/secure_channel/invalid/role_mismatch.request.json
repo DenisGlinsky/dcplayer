@@ -42,8 +42,9 @@
     "payload_type": "sign_request",
     "schema_ref": "spb1.sign.request.v1",
     "body": {
-      "digest_ref": "sha256:sample-digest-001",
-      "key_slot": "server-signing-key-01"
+      "key_slot": "server-signing-key-01",
+      "manifest_hash": "sha256:manifest-001",
+      "metadata_summary": "cpl=feature-main;asset_map=ov"
     }
   }
 }

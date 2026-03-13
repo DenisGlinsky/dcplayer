@@ -1,0 +1,8 @@
+[
+  {
+    "code": "secure_channel.unexpected_field",
+    "severity": "error",
+    "path": "/payload/body/probe",
+    "message": "Field is not allowed for payload family"
+  }
+]

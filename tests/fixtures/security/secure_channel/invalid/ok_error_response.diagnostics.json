@@ -1,0 +1,8 @@
+[
+  {
+    "code": "secure_channel.invalid_status_body_combination",
+    "severity": "error",
+    "path": "/payload/payload_type",
+    "message": "status=ok must use an api-specific response family"
+  }
+]
