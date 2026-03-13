@@ -1,0 +1,8 @@
+[
+  {
+    "code": "secure_time.invalid_time_format",
+    "severity": "error",
+    "path": "/current_time_utc",
+    "message": "current_time_utc must be canonical UTC ISO-8601"
+  }
+]

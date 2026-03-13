@@ -1,0 +1,8 @@
+[
+  {
+    "code": "secure_time.missing_required_time_field",
+    "severity": "error",
+    "path": "/current_time_utc",
+    "message": "current_time_utc is required when secure_time_status is not unavailable"
+  }
+]

@@ -11,7 +11,7 @@
 
 ## 2. Текущее project snapshot
 
-Сейчас проект находится в состоянии **scaffold baseline + T01a/T01b/T02a/T02b/T02c/T03b/T03c/T03d готовы; T03a desync в текущем worktree**.
+Сейчас проект находится в состоянии **scaffold baseline + T01a/T01b/T02a/T02b/T02c/T03b/T03c/T03d/T03e готовы; T03a desync в текущем worktree**.
 
 Подтверждено:
 - репозиторий очищен от `build/`, `__MACOSX`, `.DS_Store` и подобных артефактов;
@@ -49,10 +49,16 @@
 - deterministic diagnostics покрывают invalid event_type, invalid severity, malformed event_time/export_time, duplicate event_id, export ordering mismatch, invalid event/export linkage, invalid tamper transition и missing required audit field;
 - corrective patch усилил direct object-level validate path: `validate_audit_export()` теперь сохраняет error status и не обходит nested event-level invariants;
 - corrective patch устранил parse/direct diagnostic drift для invalid-present nested audit fields: `build_security_event()` больше не наслаивает ложный `audit.missing_required_field` поверх специфичного nested diagnostic;
+- реализованы `SecureClockPolicy` и `SecureTimeStatus` с deterministic canonical JSON serialization, strict model-level gating semantics, `\uXXXX` round-trip в parser и стабильной parse boundary для required time fields;
+- реализованы baseline source kinds `rtc_secure | rtc_untrusted | imported_secure_time | operator_set_time_placeholder | unknown`;
+- deterministic diagnostics покрывают invalid time format/source, missing required time field, untrusted source, stale time, skew exceeded, non-monotonic time, policy-disallowed source и secure time unavailable;
+- host-side baseline `spb1` contract теперь публикует secure clock policy и baseline список secure-time-gated APIs;
 - `docs/IMPLEMENT.md` синхронизирован с публичным `T03b/T03c` diagnostic surface, включая ACL/API body validation и baseline invalid ref diagnostics;
 - `docs/IMPLEMENT.md` синхронизирован с публичным `T03d` audit/tamper diagnostic surface;
+- `docs/IMPLEMENT.md` синхронизирован с публичным `T03e` secure-time diagnostic surface и gating semantics;
 - добавлены valid/invalid secure channel fixtures для baseline APIs и branch-focused unit tests;
 - добавлены valid/invalid audit fixtures и branch-focused unit tests для `SecurityEvent`/`AuditExport`;
+- добавлены valid/invalid secure time fixtures и branch-focused unit tests для `SecureClockPolicy`/`SecureTimeStatus`;
 - добавлены valid/invalid DCP fixtures и unit tests для `assetmap`/`pkl`/`cpl`;
 - добавлены valid/invalid OV/VF fixtures и unit/integration tests для resolver-а;
 - добавлены valid/invalid supplemental fixtures и unit/integration tests для merge layer;
@@ -83,9 +89,10 @@
 - spec-level `CertificateStore` / `TrustChain` PKI result-model baseline;
 - `secure_channel` object model, canonical JSON serialization, strict ACL matrix и authority checks;
 - `audit` object model, canonical JSON serialization, export validation и tamper/recovery state validation;
+- `secure_time` object model, canonical JSON serialization с корректным string escaping, parser support для `\uXXXX`, reject raw control chars в JSON string, direct policy/status validation и fail-closed/fail-open gate semantics без ослабления `secure_time_status != trusted`;
 - `ProtectedApiEnvelope` request/response validation с API-specific body schemas и family matching;
 - `SecurityModuleContract` baseline для `pi_zymkey`;
-- baseline host contract factory для `spb1`;
+- baseline host contract factory для `spb1`, включая secure clock policy и secure-time-gated API list;
 - regression coverage для `secure_channel.duplicate_revocation_status` и `secure_channel.duplicate_supported_api_name`;
 - regression coverage для `secure_channel.missing_required_field`, `secure_channel.unexpected_field`, `secure_channel.invalid_request_body`, `secure_channel.invalid_response_body`, `secure_channel.request_response_api_mismatch` и `secure_channel.invalid_status_body_combination`;
 - regression coverage для `audit.invalid_event_type`, `audit.invalid_severity`, `audit.invalid_event_time`, `audit.duplicate_event_id`, `audit.export_ordering_mismatch`, `audit.invalid_event_export_linkage`, `audit.invalid_tamper_transition` и `audit.missing_required_field`;
@@ -107,6 +114,7 @@
 - unit test `playback_timeline_unit_test`;
 - integration test `playback_timeline_integration_test`;
 - unit tests `secure_channel_contract_unit_test` и `spb1_protected_api_unit_test`;
+- unit tests `secure_clock_policy_unit_test` и `secure_time_gate_unit_test`;
 - канонические project docs;
 - 34 companion-specs;
 - 39 task-specific `AGENTS.md`.
@@ -116,7 +124,7 @@
 - `src/security_api/certs/**` и `tests/unit/security/pki/**` остаются scaffold-only в текущем дереве;
 - real mutual-TLS transport;
 - TPM/ZymKey device integration;
-- secure clock;
+- runtime secure clock / RTC device access / live time synchronization;
 - runtime security logs, log transport и encrypted audit storage;
 - KDM validation;
 - GPU decode;
@@ -127,7 +135,7 @@
 
 ## 4. Evidence baseline
 
-Для веток `T01a`, `T01b`, `T02a`, `T02b`, `T02c`, `T03b`, `T03c` и `T03d` в этом handoff подтверждены следующие команды:
+Для веток `T01a`, `T01b`, `T02a`, `T02b`, `T02c`, `T03b`, `T03c`, `T03d` и `T03e` в этом handoff подтверждены следующие команды:
 
 ```bash
 ./scripts/bootstrap.sh
@@ -140,6 +148,7 @@
 ./scripts/test.sh -R 'timeline'
 ./scripts/test.sh -R 'secure|channel|spb1'
 ./scripts/test.sh -R 'audit|tamper|event|export'
+./scripts/test.sh -R 'time|clock|secure_time'
 ```
 
 Focused branch tests:
@@ -156,6 +165,8 @@ Focused branch tests:
 - `spb1_protected_api_unit_test`
 - `audit_event_unit_test`
 - `audit_export_tamper_unit_test`
+- `secure_clock_policy_unit_test`
+- `secure_time_gate_unit_test`
 
 ## 5. Легенда статусов
 
@@ -167,14 +178,16 @@ Focused branch tests:
 ## 6. Следующая очередь
 
 Первыми готовыми к запуску ветками являются:
+- `T04a` — Security Module
 - `T05a` — J2K Backend
 - `T06a` — Watermark Model
 - `T07a` — Audio Sync
 
 Рекомендуемый порядок старта:
-1. `T05a`
-2. `T06a`
-3. `T07a`
+1. `T04a`
+2. `T05a`
+3. `T06a`
+4. `T07a`
 
 ## 7. Фаза A — Foundation
 
@@ -197,6 +210,8 @@ Focused branch tests:
 | T03b | DONE | Реализованы secure channel contract, protected request/response envelopes, metadata-level identity/trust checks, ACL baseline, fixtures и branch-focused unit tests. |
 | T03c | DONE | Реализованы strict ACL/API semantics поверх `T03b`: baseline API body schemas, deterministic request/response family validation, invalid status/body handling, valid/invalid fixtures и branch-focused unit tests. |
 | T03d | DONE | Реализованы `SecurityEvent`/`AuditExport`, deterministic diagnostics, tamper/recovery/export model semantics, valid/invalid fixtures и branch-focused unit tests без runtime logging/transport. |
+| T03e | DONE | Реализованы `SecureClockPolicy`/`SecureTimeStatus`, deterministic time diagnostics, fail-closed/fail-open gating semantics, valid/invalid fixtures и branch-focused unit tests без RTC/sync/runtime integration. |
+| T04a | READY | `SecureChannelContract`, `ProtectedApiEnvelope` и `SecureClockPolicy` теперь зафиксированы; можно строить host-side security module и simulator поверх этих contract-слоёв. |
 | T05a | READY | Decode abstraction можно проектировать на канонических specs и leaf-level CMake scaffold. |
 | T06a | READY | Watermark contract можно фиксировать на текущих companion-specs. |
 | T07a | READY | `PlaybackTimeline` готов; можно стартовать sync-ветку поверх dry-run timeline контракта. |

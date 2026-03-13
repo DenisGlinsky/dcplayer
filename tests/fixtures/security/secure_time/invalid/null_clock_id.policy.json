@@ -1,0 +1,11 @@
+{
+  "clock_id": null,
+  "max_allowed_skew_seconds": 30,
+  "freshness_window_seconds": 300,
+  "monotonic_required": true,
+  "allowed_time_sources": [
+    "rtc_secure",
+    "imported_secure_time"
+  ],
+  "fail_closed_on_untrusted_time": true
+}

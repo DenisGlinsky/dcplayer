@@ -1,0 +1,8 @@
+[
+  {
+    "code": "secure_time.untrusted_time_source",
+    "severity": "error",
+    "path": "/source_trust_state",
+    "message": "time source is not trusted"
+  }
+]

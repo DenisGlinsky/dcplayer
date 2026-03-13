@@ -1,0 +1,8 @@
+[
+  {
+    "code": "secure_time.policy_source_not_allowed",
+    "severity": "error",
+    "path": "/allowed_time_sources",
+    "message": "time_source is not allowed by policy"
+  }
+]

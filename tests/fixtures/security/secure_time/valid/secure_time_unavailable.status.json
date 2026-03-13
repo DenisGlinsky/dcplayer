@@ -1,0 +1,10 @@
+{
+  "secure_time_status": "unavailable",
+  "time_source": "unknown",
+  "source_role": "unknown",
+  "source_trust_state": "unknown",
+  "drift_state": "unknown",
+  "freshness": "unknown",
+  "monotonicity_status": "unknown",
+  "tamper_time_state": "tamper_lockout"
+}

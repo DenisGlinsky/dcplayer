@@ -1,0 +1,8 @@
+[
+  {
+    "code": "secure_time.non_monotonic_time",
+    "severity": "error",
+    "path": "/monotonicity_status",
+    "message": "monotonicity is required by policy"
+  }
+]

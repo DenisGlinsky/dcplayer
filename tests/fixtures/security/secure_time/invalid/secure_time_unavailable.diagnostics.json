@@ -1,0 +1,8 @@
+[
+  {
+    "code": "secure_time.secure_time_unavailable",
+    "severity": "error",
+    "path": "/tamper_time_state",
+    "message": "tamper state makes secure time unavailable"
+  }
+]
