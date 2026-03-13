@@ -1,0 +1,8 @@
+[
+  {
+    "code": "audit.invalid_event_type",
+    "severity": "error",
+    "path": "/event_type",
+    "message": "Field has an unsupported enum value"
+  }
+]

@@ -1,0 +1,8 @@
+[
+  {
+    "code": "audit.duplicate_event_id",
+    "severity": "error",
+    "path": "/events[2]/event_id",
+    "message": "event_id must be unique within one export"
+  }
+]

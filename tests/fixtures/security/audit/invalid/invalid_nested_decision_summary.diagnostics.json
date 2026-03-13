@@ -1,0 +1,8 @@
+[
+  {
+    "code": "audit.invalid_value",
+    "severity": "error",
+    "path": "/events[1]/decision_summary/decision",
+    "message": "Decision summary must not be empty"
+  }
+]

@@ -1,0 +1,25 @@
+{
+  "event_id": "11111111-1111-4111-8111-111111111111",
+  "event_type": "auth.session_authenticated",
+  "severity": "info",
+  "event_time_utc": "2026-03-13T10:00:00Z",
+  "producer_role": "ubuntu_tpm",
+  "actor_identity": {
+    "role": "ubuntu_tpm",
+    "device_id": "ubuntu-tpm-spb1-01",
+    "certificate_fingerprint": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+  },
+  "peer_identity": {
+    "role": "pi_zymkey",
+    "device_id": "pi-zymkey-spb1-01",
+    "certificate_fingerprint": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "correlation_id": "control-session-01",
+  "payload_metadata": {
+    "channel_id": "spb1.control.v1",
+    "transport": "mutual_tls"
+  },
+  "decision_summary": {
+    "decision": "allow"
+  }
+}

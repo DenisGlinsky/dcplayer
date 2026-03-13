@@ -1,0 +1,45 @@
+{
+  "export_id": "cdcdcdcd-cdcd-4dcd-8dcd-cdcdcdcdcdcd",
+  "export_time_utc": "2026-03-13T10:11:00Z",
+  "events": [
+    {
+      "event_id": "dededede-dede-4ede-8ede-dededededede",
+      "event_type": "tamper.tamper_detected",
+      "severity": "critical",
+      "event_time_utc": "2026-03-13T10:05:00Z",
+      "producer_role": "pi_zymkey",
+      "payload_metadata": {
+        "sensor_id": "case-open-01"
+      },
+      "result_summary": {
+        "result": "detected"
+      }
+    },
+    {
+      "event_id": "dededede-dede-4ede-8ede-dededededede",
+      "event_type": "tamper.tamper_lockout",
+      "severity": "critical",
+      "event_time_utc": "2026-03-13T10:06:00Z",
+      "producer_role": "pi_zymkey",
+      "payload_metadata": {
+        "lockout_scope": "secure_module"
+      },
+      "result_summary": {
+        "result": "locked_out"
+      }
+    }
+  ],
+  "ordering": {
+    "ordered_by": "event_time_utc,event_id",
+    "direction": "ascending"
+  },
+  "export_metadata": {
+    "completeness": "complete",
+    "export_reason": "manual",
+    "source_channel_id": "spb1.control.v1"
+  },
+  "integrity_metadata": {
+    "placeholder_type": "checksum_pending",
+    "placeholder_ref": "sha256:pending"
+  }
+}

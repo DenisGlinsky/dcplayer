@@ -1,0 +1,13 @@
+{
+  "event_id": "99999999-9999-4999-8999-999999999999",
+  "event_type": "tamper.tamper_detected",
+  "severity": "critical",
+  "event_time_utc": "2026-03-13 10:05:00",
+  "producer_role": "pi_zymkey",
+  "payload_metadata": {
+    "sensor_id": "case-open-01"
+  },
+  "result_summary": {
+    "result": "detected"
+  }
+}

@@ -404,3 +404,88 @@ Canonical normalization `T03c`:
 - нет живого TLS handshake, socket/HTTP/gRPC transport и device I/O;
 - `unwrap` и `decrypt` остаются placeholder-level API contracts и не означают runtime crypto execution;
 - secure clock, security logs, KDM, decrypt runtime, GPU и playback не входят в эту ветку.
+
+## 16. T03d audit/tamper model
+
+Для `T03d` вводится отдельный model/validation слой в `src/security_api/audit`,
+который продолжает security contract surface после `T03b/T03c`, но по-прежнему не реализует runtime logging и transport.
+
+Вход `T03d`:
+- JSON `SecurityEvent`;
+- JSON `AuditExport`;
+- baseline role vocabulary из `secure_channel`;
+- tamper/recovery/export semantics только на уровне object model.
+
+Выход `T03d`:
+- нормализованные `SecurityEvent` и `AuditExport`;
+- детерминированные diagnostics формата `code + severity + path + message`;
+- canonical JSON serialization для valid objects;
+- export-level tamper/recovery state validation без runtime side effects.
+- единый event-level object validator, который используется и parse-path, и direct object validation path.
+
+Baseline event families `T03d`:
+- `auth.session_authenticated`
+- `trust.peer_validated`
+- `acl.decision_recorded`
+- `api.request_processed`
+- `tamper.tamper_detected`
+- `tamper.tamper_lockout`
+- `recovery.recovery_started`
+- `recovery.recovery_completed`
+- `recovery.recovery_failed`
+- `export.audit_exported`
+
+Event-level правила `T03d`:
+- `event_id`, `request_id`, `export_id_ref` используют canonical UUID form;
+- `event_time_utc` и `export_time_utc` используют UTC ISO-8601;
+- direct object validation не допускает invalid enum values для `event_type`, `severity`, `producer_role`, даже если объект собран программно;
+- `payload_metadata` остаётся deterministic string-map без secret material;
+- `auth/trust/acl` семьи требуют `decision_summary`;
+- `api/tamper/recovery/export` семьи требуют `result_summary`;
+- `api.request_processed` требует `request_id`;
+- `export.audit_exported` требует `export_id_ref`.
+- parse-path сохраняет distinction между absent и invalid-present nested objects, поэтому `missing_required_field` не наслаивается поверх `invalid_value` / `invalid_identity_role` / `invalid_fingerprint` для уже представленного поля.
+
+Export-level правила `T03d`:
+- `events` обязаны быть отсортированы по `event_time_utc`, затем по `event_id`;
+- duplicate `event_id` внутри одного export-а отклоняются;
+- `event.export_id_ref`, если присутствует, обязан совпадать с `export_id`;
+- direct `validate_audit_export()` прогоняет каждый nested event через тот же event-level validator, что и parse-path;
+- direct `validate_audit_export()` вычисляет итоговый `validation_status` до перемещения diagnostics;
+- nested invalid-present fields дают тот же diagnostic surface на parse-path и direct object validation path;
+- `ordering.ordered_by` фиксирован как `event_time_utc,event_id`;
+- `ordering.direction` фиксирован как `ascending`;
+- `integrity_metadata` хранит только placeholder metadata (`none | checksum_pending | signature_pending`).
+
+Tamper/recovery state machine `T03d`:
+- `tamper_detected -> tamper_lockout`;
+- `tamper_detected|tamper_lockout -> recovery_started`;
+- `recovery_started -> recovery_completed|recovery_failed`;
+- `recovery_failed` возвращает export в locked-out состояние;
+- runtime reaction logic и hardware triggers в этот слой не входят.
+
+Публичный diagnostic surface `T03d`:
+- `audit.json_malformed`
+- `audit.missing_required_field`
+- `audit.invalid_type`
+- `audit.invalid_value`
+- `audit.invalid_identifier`
+- `audit.invalid_event_type`
+- `audit.invalid_severity`
+- `audit.invalid_event_time`
+- `audit.invalid_export_time`
+- `audit.invalid_producer_role`
+- `audit.invalid_identity_role`
+- `audit.invalid_fingerprint`
+- `audit.invalid_export_completeness`
+- `audit.invalid_integrity_placeholder`
+- `audit.duplicate_event_id`
+- `audit.export_ordering_mismatch`
+- `audit.invalid_event_export_linkage`
+- `audit.invalid_tamper_transition`
+
+Сознательные ограничения `T03d`:
+- нет runtime log transport, SIEM integration и внешнего export delivery;
+- нет secure clock source и real time-discipline logic;
+- нет encrypted audit storage, signing или encryption реальных log blobs;
+- нет TPM/ZymKey runtime integration, GPIO tamper plumbing, KDM и playback/runtime crypto.

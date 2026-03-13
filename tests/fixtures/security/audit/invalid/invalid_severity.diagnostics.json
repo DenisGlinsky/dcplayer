@@ -1,0 +1,8 @@
+[
+  {
+    "code": "audit.invalid_severity",
+    "severity": "error",
+    "path": "/severity",
+    "message": "Field has an unsupported enum value"
+  }
+]

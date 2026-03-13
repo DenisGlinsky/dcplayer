@@ -1,0 +1,8 @@
+[
+  {
+    "code": "audit.invalid_event_time",
+    "severity": "error",
+    "path": "/event_time_utc",
+    "message": "Field must use UTC ISO-8601"
+  }
+]
