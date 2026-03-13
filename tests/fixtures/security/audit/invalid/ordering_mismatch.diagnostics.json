@@ -1,0 +1,8 @@
+[
+  {
+    "code": "audit.export_ordering_mismatch",
+    "severity": "error",
+    "path": "/events[2]",
+    "message": "events must be sorted by event_time_utc then event_id"
+  }
+]

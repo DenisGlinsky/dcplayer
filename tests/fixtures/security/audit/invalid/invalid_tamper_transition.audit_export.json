@@ -1,0 +1,32 @@
+{
+  "export_id": "15151515-1515-4515-8515-151515151515",
+  "export_time_utc": "2026-03-13T10:11:00Z",
+  "events": [
+    {
+      "event_id": "16161616-1616-4616-8616-161616161616",
+      "event_type": "recovery.recovery_completed",
+      "severity": "info",
+      "event_time_utc": "2026-03-13T10:09:00Z",
+      "producer_role": "ubuntu_tpm",
+      "payload_metadata": {
+        "procedure_id": "recovery-01"
+      },
+      "result_summary": {
+        "result": "completed"
+      }
+    }
+  ],
+  "ordering": {
+    "ordered_by": "event_time_utc,event_id",
+    "direction": "ascending"
+  },
+  "export_metadata": {
+    "completeness": "complete",
+    "export_reason": "manual",
+    "source_channel_id": "spb1.control.v1"
+  },
+  "integrity_metadata": {
+    "placeholder_type": "checksum_pending",
+    "placeholder_ref": "sha256:pending"
+  }
+}

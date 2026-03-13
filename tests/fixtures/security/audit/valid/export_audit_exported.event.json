@@ -1,0 +1,15 @@
+{
+  "event_id": "33333333-3333-4333-8333-333333333333",
+  "event_type": "export.audit_exported",
+  "severity": "info",
+  "event_time_utc": "2026-03-13T10:10:00Z",
+  "producer_role": "ubuntu_tpm",
+  "export_id_ref": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+  "payload_metadata": {
+    "destination": "local_bundle",
+    "integrity_state": "checksum_pending"
+  },
+  "result_summary": {
+    "result": "exported"
+  }
+}

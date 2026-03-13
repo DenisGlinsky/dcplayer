@@ -1,0 +1,33 @@
+{
+  "export_id": "12121212-1212-4212-8212-121212121212",
+  "export_time_utc": "2026-03-13T10:11:00Z",
+  "events": [
+    {
+      "event_id": "13131313-1313-4313-8313-131313131313",
+      "event_type": "export.audit_exported",
+      "severity": "info",
+      "event_time_utc": "2026-03-13T10:10:00Z",
+      "producer_role": "ubuntu_tpm",
+      "export_id_ref": "14141414-1414-4414-8414-141414141414",
+      "payload_metadata": {
+        "destination": "local_bundle"
+      },
+      "result_summary": {
+        "result": "exported"
+      }
+    }
+  ],
+  "ordering": {
+    "ordered_by": "event_time_utc,event_id",
+    "direction": "ascending"
+  },
+  "export_metadata": {
+    "completeness": "complete",
+    "export_reason": "manual",
+    "source_channel_id": "spb1.control.v1"
+  },
+  "integrity_metadata": {
+    "placeholder_type": "checksum_pending",
+    "placeholder_ref": "sha256:pending"
+  }
+}

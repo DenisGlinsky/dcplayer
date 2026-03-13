@@ -1,0 +1,8 @@
+[
+  {
+    "code": "audit.missing_required_field",
+    "severity": "error",
+    "path": "/request_id",
+    "message": "Missing required audit field"
+  }
+]

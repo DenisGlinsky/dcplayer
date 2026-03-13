@@ -1,0 +1,8 @@
+[
+  {
+    "code": "audit.invalid_value",
+    "severity": "error",
+    "path": "/events[1]/result_summary/result",
+    "message": "Result summary must not be empty"
+  }
+]

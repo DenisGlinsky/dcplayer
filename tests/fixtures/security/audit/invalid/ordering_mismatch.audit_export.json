@@ -1,0 +1,55 @@
+{
+  "export_id": "efefefef-efef-4fef-8fef-efefefefefef",
+  "export_time_utc": "2026-03-13T10:11:00Z",
+  "events": [
+    {
+      "event_id": "01010101-0101-4101-8101-010101010101",
+      "event_type": "auth.session_authenticated",
+      "severity": "info",
+      "event_time_utc": "2026-03-13T10:05:00Z",
+      "producer_role": "ubuntu_tpm",
+      "actor_identity": {
+        "role": "ubuntu_tpm",
+        "device_id": "ubuntu-tpm-spb1-01",
+        "certificate_fingerprint": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      },
+      "peer_identity": {
+        "role": "pi_zymkey",
+        "device_id": "pi-zymkey-spb1-01",
+        "certificate_fingerprint": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      "payload_metadata": {
+        "channel_id": "spb1.control.v1"
+      },
+      "decision_summary": {
+        "decision": "allow"
+      }
+    },
+    {
+      "event_id": "02020202-0202-4202-8202-020202020202",
+      "event_type": "tamper.tamper_detected",
+      "severity": "critical",
+      "event_time_utc": "2026-03-13T10:04:00Z",
+      "producer_role": "pi_zymkey",
+      "payload_metadata": {
+        "sensor_id": "case-open-01"
+      },
+      "result_summary": {
+        "result": "detected"
+      }
+    }
+  ],
+  "ordering": {
+    "ordered_by": "event_time_utc,event_id",
+    "direction": "ascending"
+  },
+  "export_metadata": {
+    "completeness": "complete",
+    "export_reason": "manual",
+    "source_channel_id": "spb1.control.v1"
+  },
+  "integrity_metadata": {
+    "placeholder_type": "checksum_pending",
+    "placeholder_ref": "sha256:pending"
+  }
+}

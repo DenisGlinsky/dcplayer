@@ -1,0 +1,38 @@
+{
+  "export_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+  "export_time_utc": "2026-03-13T10:11:00Z",
+  "events": [
+    {
+      "event_id": "22222222-2222-4222-8222-222222222222",
+      "event_type": "acl.decision_recorded",
+      "severity": "warning",
+      "event_time_utc": "2026-03-13T10:05:00Z",
+      "producer_role": "ubuntu_tpm",
+      "actor_identity": {
+        "role": "ubuntu_tpm",
+        "device_id": "ubuntu-tpm-spb1-01",
+        "certificate_fingerprint": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      },
+      "payload_metadata": {
+        "acl_policy": "spb1-admin",
+        "effect": "deny"
+      },
+      "decision_summary": {
+        "decision": ""
+      }
+    }
+  ],
+  "ordering": {
+    "ordered_by": "event_time_utc,event_id",
+    "direction": "ascending"
+  },
+  "export_metadata": {
+    "completeness": "complete",
+    "export_reason": "manual",
+    "source_channel_id": "spb1.control.v1"
+  },
+  "integrity_metadata": {
+    "placeholder_type": "checksum_pending",
+    "placeholder_ref": "sha256:pending"
+  }
+}

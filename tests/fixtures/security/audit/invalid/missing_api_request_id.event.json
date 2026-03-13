@@ -1,0 +1,19 @@
+{
+  "event_id": "abababab-abab-4bab-8bab-abababababab",
+  "event_type": "api.request_processed",
+  "severity": "info",
+  "event_time_utc": "2026-03-13T10:08:00Z",
+  "producer_role": "ubuntu_tpm",
+  "actor_identity": {
+    "role": "ubuntu_tpm",
+    "device_id": "ubuntu-tpm-spb1-01",
+    "certificate_fingerprint": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+  },
+  "payload_metadata": {
+    "api_name": "identity",
+    "status": "ok"
+  },
+  "result_summary": {
+    "result": "ok"
+  }
+}

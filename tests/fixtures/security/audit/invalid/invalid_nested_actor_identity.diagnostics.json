@@ -1,0 +1,8 @@
+[
+  {
+    "code": "audit.invalid_fingerprint",
+    "severity": "error",
+    "path": "/events[1]/actor_identity/certificate_fingerprint",
+    "message": "Fingerprint must be a lowercase hex string"
+  }
+]

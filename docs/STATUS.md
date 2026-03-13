@@ -11,7 +11,7 @@
 
 ## 2. Текущее project snapshot
 
-Сейчас проект находится в состоянии **scaffold baseline + T01a/T01b/T02a/T02b/T02c/T03b/T03c готовы; T03a desync в текущем worktree**.
+Сейчас проект находится в состоянии **scaffold baseline + T01a/T01b/T02a/T02b/T02c/T03b/T03c/T03d готовы; T03a desync в текущем worktree**.
 
 Подтверждено:
 - репозиторий очищен от `build/`, `__MACOSX`, `.DS_Store` и подобных артефактов;
@@ -44,8 +44,15 @@
 - response parse/validate split зафиксирован: parse stage принимает syntactically valid response envelope с корректной response family/body schema, а status/body reject остаётся в semantic validation;
 - response validation соблюдает precedence: `invalid_status_body_combination` остаётся первичным кодом и не получает лишний `request_response_api_mismatch` поверх того же дефекта;
 - deterministic diagnostics покрывают invalid server/client role, role mismatch, invalid peer identity, missing trust binding, untrusted peer, unauthorized API, invalid request/response body, missing required field, unexpected field, request/response api mismatch, invalid status/body combination и response request-id mismatch;
+- реализованы `SecurityEvent` и `AuditExport` object models с deterministic canonical JSON serialization;
+- реализованы baseline event families `auth/trust/acl/api/tamper/recovery/export` и model-level tamper/recovery/export semantics;
+- deterministic diagnostics покрывают invalid event_type, invalid severity, malformed event_time/export_time, duplicate event_id, export ordering mismatch, invalid event/export linkage, invalid tamper transition и missing required audit field;
+- corrective patch усилил direct object-level validate path: `validate_audit_export()` теперь сохраняет error status и не обходит nested event-level invariants;
+- corrective patch устранил parse/direct diagnostic drift для invalid-present nested audit fields: `build_security_event()` больше не наслаивает ложный `audit.missing_required_field` поверх специфичного nested diagnostic;
 - `docs/IMPLEMENT.md` синхронизирован с публичным `T03b/T03c` diagnostic surface, включая ACL/API body validation и baseline invalid ref diagnostics;
+- `docs/IMPLEMENT.md` синхронизирован с публичным `T03d` audit/tamper diagnostic surface;
 - добавлены valid/invalid secure channel fixtures для baseline APIs и branch-focused unit tests;
+- добавлены valid/invalid audit fixtures и branch-focused unit tests для `SecurityEvent`/`AuditExport`;
 - добавлены valid/invalid DCP fixtures и unit tests для `assetmap`/`pkl`/`cpl`;
 - добавлены valid/invalid OV/VF fixtures и unit/integration tests для resolver-а;
 - добавлены valid/invalid supplemental fixtures и unit/integration tests для merge layer;
@@ -75,11 +82,15 @@
 - `PlaybackTimeline` dry-run builder + canonical JSON serialization;
 - spec-level `CertificateStore` / `TrustChain` PKI result-model baseline;
 - `secure_channel` object model, canonical JSON serialization, strict ACL matrix и authority checks;
+- `audit` object model, canonical JSON serialization, export validation и tamper/recovery state validation;
 - `ProtectedApiEnvelope` request/response validation с API-specific body schemas и family matching;
 - `SecurityModuleContract` baseline для `pi_zymkey`;
 - baseline host contract factory для `spb1`;
 - regression coverage для `secure_channel.duplicate_revocation_status` и `secure_channel.duplicate_supported_api_name`;
 - regression coverage для `secure_channel.missing_required_field`, `secure_channel.unexpected_field`, `secure_channel.invalid_request_body`, `secure_channel.invalid_response_body`, `secure_channel.request_response_api_mismatch` и `secure_channel.invalid_status_body_combination`;
+- regression coverage для `audit.invalid_event_type`, `audit.invalid_severity`, `audit.invalid_event_time`, `audit.duplicate_event_id`, `audit.export_ordering_mismatch`, `audit.invalid_event_export_linkage`, `audit.invalid_tamper_transition` и `audit.missing_required_field`;
+- regression coverage для direct `validate_audit_export()` теперь отдельно проверяет missing `request_id`, missing `export_id_ref`, malformed `event_time_utc`, invalid enum values и стабильный non-ok status на error-level diagnostics;
+- regression coverage теперь отдельно сравнивает parse-path и direct validation для invalid nested `actor_identity`, `decision_summary` и `result_summary`;
 - backed owner selection для целевого `CPL`;
 - deterministic OV/VF diagnostics и dependency classification;
 - deterministic supplemental diagnostics, policy validation и multi-policy conflict handling;
@@ -106,7 +117,7 @@
 - real mutual-TLS transport;
 - TPM/ZymKey device integration;
 - secure clock;
-- security logs;
+- runtime security logs, log transport и encrypted audit storage;
 - KDM validation;
 - GPU decode;
 - forensic watermark insertion;
@@ -116,7 +127,7 @@
 
 ## 4. Evidence baseline
 
-Для веток `T01a`, `T01b`, `T02a`, `T02b`, `T02c`, `T03b` и `T03c` в этом handoff подтверждены следующие команды:
+Для веток `T01a`, `T01b`, `T02a`, `T02b`, `T02c`, `T03b`, `T03c` и `T03d` в этом handoff подтверждены следующие команды:
 
 ```bash
 ./scripts/bootstrap.sh
@@ -128,6 +139,7 @@
 ./scripts/test.sh -R 'supplemental'
 ./scripts/test.sh -R 'timeline'
 ./scripts/test.sh -R 'secure|channel|spb1'
+./scripts/test.sh -R 'audit|tamper|event|export'
 ```
 
 Focused branch tests:
@@ -142,6 +154,8 @@ Focused branch tests:
 - `playback_timeline_integration_test`
 - `secure_channel_contract_unit_test`
 - `spb1_protected_api_unit_test`
+- `audit_event_unit_test`
+- `audit_export_tamper_unit_test`
 
 ## 5. Легенда статусов
 
@@ -182,6 +196,7 @@ Focused branch tests:
 | T03a | DESYNC | `CertificateStore`/`TrustChain` specs присутствуют и используются `T03b`, но `src/security_api/certs/**` и `tests/unit/security/pki/**` в текущем worktree остаются scaffold-only, поэтому `DONE` здесь не подтверждён. |
 | T03b | DONE | Реализованы secure channel contract, protected request/response envelopes, metadata-level identity/trust checks, ACL baseline, fixtures и branch-focused unit tests. |
 | T03c | DONE | Реализованы strict ACL/API semantics поверх `T03b`: baseline API body schemas, deterministic request/response family validation, invalid status/body handling, valid/invalid fixtures и branch-focused unit tests. |
+| T03d | DONE | Реализованы `SecurityEvent`/`AuditExport`, deterministic diagnostics, tamper/recovery/export model semantics, valid/invalid fixtures и branch-focused unit tests без runtime logging/transport. |
 | T05a | READY | Decode abstraction можно проектировать на канонических specs и leaf-level CMake scaffold. |
 | T06a | READY | Watermark contract можно фиксировать на текущих companion-specs. |
 | T07a | READY | `PlaybackTimeline` готов; можно стартовать sync-ветку поверх dry-run timeline контракта. |

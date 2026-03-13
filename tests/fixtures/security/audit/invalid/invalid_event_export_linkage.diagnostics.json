@@ -1,0 +1,8 @@
+[
+  {
+    "code": "audit.invalid_event_export_linkage",
+    "severity": "error",
+    "path": "/events[1]/export_id_ref",
+    "message": "event export reference must match export_id"
+  }
+]

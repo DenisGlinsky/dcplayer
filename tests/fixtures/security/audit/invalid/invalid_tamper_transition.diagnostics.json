@@ -1,0 +1,8 @@
+[
+  {
+    "code": "audit.invalid_tamper_transition",
+    "severity": "error",
+    "path": "/events[1]/event_type",
+    "message": "recovery_completed requires recovery_started"
+  }
+]
